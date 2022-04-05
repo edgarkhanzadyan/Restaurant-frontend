@@ -2,7 +2,21 @@ import { FieldsAreEmpty } from './firebaseUtility/helpers';
 
 const backendUrl = `http://localhost:3456`;
 
-export const backendSignup = ({ email, password, name, userRole }) => {
+type UserRole = 'Regular' | 'RestaurantOwner' | 'Admin';
+
+type BackendSignupRequestBody = {
+  email: string;
+  password: string;
+  name: string;
+  userRole: UserRole;
+};
+
+export const backendSignup = ({
+  email,
+  password,
+  name,
+  userRole,
+}: BackendSignupRequestBody) => {
   if (!email || !password || !name || !userRole) {
     FieldsAreEmpty();
     return Promise.reject();
@@ -18,7 +32,7 @@ export const backendSignup = ({ email, password, name, userRole }) => {
     headers: {
       'Content-type': 'application/json',
     },
-  }).then((res) => console.log(res) || res.json());
+  }).then((res) => res.json());
 
   return Promise.resolve({});
   // const secondaryFirebase = firebase.apps.find(
