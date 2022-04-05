@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Navigation from './navigation';
+import Navigation from './src/navigation';
 // import { initializeFirebaseApps } from './utility/firebaseUtility';
 
 // // Initialize Firebase
@@ -15,6 +15,6 @@ export default function App() {
   );
 }
 
-const ContainerView = styled.View`
+const ContainerView = styled.view`
   flex: 1;
 `;
