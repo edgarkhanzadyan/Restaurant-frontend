@@ -1,5 +1,5 @@
 {
-  "extends": ["airbnb", "prettier", "prettier/react"],
+  "extends": ["airbnb", "prettier"],
   "plugins": ["prettier", "import"],
   "parserOptions": {
     "ecmaVersion": 12,
@@ -24,6 +24,9 @@
     "prettier/prettier": ["error"],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "import/no-extraneous-dependencies": [0],
-    "react/prop-types": [0]
+    "react/prop-types": [0],
+    "react/function-component-definition": [0],
+    "import/prefer-default-export": [0],
+    "react/no-unstable-nested-components": [0]
   }
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FontAwesome } from '@expo/vector-icons';
 import RestaurantImage from './RestaurantImage';
-import { USER_ROLE } from '../constants';
+import { USER_ROLE } from '../../constants';
 import { deleteRestaurantAlert } from '../utility/userInteractionUtility';
 
 const RestaurantCardComponent = ({ item, navigation, userData }) => (

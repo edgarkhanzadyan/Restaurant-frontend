@@ -74,16 +74,16 @@ export const userStateListenerDatabase = ({ setUserLoggedIn, setUserData }) => {
 //     }
 //   });
 
-// export const signInWithFirebase = ({ email, password }) =>
-//   firebase
-//     .auth()
-//     .signInWithEmailAndPassword(email, password)
-//     .then(() =>
-//       firebase
-//         .database()
-//         .ref(`users/${firebase.auth().currentUser.uid}`)
-//         .once('value')
-//     );
+// export const signInWithFirebase = ({ email, password }) => Promise.resolve();
+// firebase
+//   .auth()
+//   .signInWithEmailAndPassword(email, password)
+//   .then(() =>
+//     firebase
+//       .database()
+//       .ref(`users/${firebase.auth().currentUser.uid}`)
+//       .once('value')
+//   );
 
 export const createUserFirebase = ({ email, password, name, userRole }) => {
   if (!email || !password || !name || !userRole) {

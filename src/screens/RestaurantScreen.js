@@ -7,7 +7,7 @@ import UploadImageComponent from '../components/UploadImageComponent';
 import ReplyComponent from '../components/ReplyComponent';
 import ReviewComponent from '../components/ReviewComponent';
 import RestaurantImage from '../components/RestaurantImage';
-import { USER_ROLE } from '../constants';
+import { USER_ROLE } from '../../constants';
 import {
   getRestaurantInfo,
   updateRestaurantData,

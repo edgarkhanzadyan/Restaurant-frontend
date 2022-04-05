@@ -1,5 +1,5 @@
 import { ActionSheetIOS, Alert } from 'react-native';
-import { USER_ROLE } from '../constants';
+import { USER_ROLE } from '../../constants';
 import {
   deleteReview,
   deleteReviewReply,

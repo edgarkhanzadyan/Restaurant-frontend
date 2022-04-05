@@ -33,7 +33,7 @@ const LoginPage = ({ navigation }) => {
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
-      handleAlerts(error);
+      handleAlerts(e);
     }
 
     // signInWithFirebase({ email, password })

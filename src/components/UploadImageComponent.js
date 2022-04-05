@@ -4,11 +4,11 @@ import styled from 'styled-components';
 import * as ImagePicker from 'expo-image-picker';
 
 import RestaurantImage from './RestaurantImage';
-import { uploadImage } from '../utility/firebaseUtility';
+// import { uploadImage } from '../utility/firebaseUtility';
 
 const windowWidth = Dimensions.get('window').width;
 
-const UploadImageComponent = ({ imgUrl, setImgUrl }) => {
+const UploadImageComponent = ({ imgUrl }) => {
   const [imgLoading, setImgLoading] = useState(false);
   const pickImage = async () => {
     setImgLoading(true);
@@ -21,10 +21,10 @@ const UploadImageComponent = ({ imgUrl, setImgUrl }) => {
       });
 
       if (!result.cancelled) {
-        uploadImage(result.uri).then((url) => {
-          setImgUrl(url);
-          setImgLoading(false);
-        });
+        // uploadImage(result.uri).then((url) => {
+        //   setImgUrl(url);
+        //   setImgLoading(false);
+        // });
       } else {
         setImgLoading(false);
       }

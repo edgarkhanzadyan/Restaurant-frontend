@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Dimensions } from 'react-native';
 
-import { uploadImage, createRestaurant } from '../utility/firebaseUtility';
+import { createRestaurant } from '../utility/firebaseUtility';
 import { resetToMainScreen } from '../utility/userInteractionUtility';
 import SubmitButton from '../components/SubmitButton';
 import RestaurantImage from '../components/RestaurantImage';
@@ -19,7 +19,7 @@ const AddRestaurantScreen = ({
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantDescription, setRestaurantDescription] = useState('');
   const [address, setAddress] = useState('');
-  const [imgUrl, setImgUrl] = useState(null);
+  const [imgUrl] = useState(null);
   const [imgLoading, setImgLoading] = useState(false);
 
   const pickImage = async () => {
@@ -33,10 +33,10 @@ const AddRestaurantScreen = ({
       });
 
       if (!result.cancelled) {
-        uploadImage(result.uri).then((url) => {
-          setImgUrl(url);
-          setImgLoading(false);
-        });
+        // uploadImage(result.uri).then((url) => {
+        //   setImgUrl(url);
+        //   setImgLoading(false);
+        // });
       } else {
         setImgLoading(false);
       }

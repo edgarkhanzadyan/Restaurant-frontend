@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { USER_ROLE, USER_MAP } from '../constants';
+import { USER_ROLE, USER_MAP } from '../../constants';
 
 const RoleSelector = ({ userRole, setUserRole, disabled, isCreatorAdmin }) => {
   if (disabled) {

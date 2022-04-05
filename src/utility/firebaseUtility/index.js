@@ -3,7 +3,7 @@ export {
   signOut,
   userStateListener,
   userStateListenerDatabase,
-  signInWithFirebase,
+  // signInWithFirebase,
   createUserFirebase,
   signUpWithFirebase,
   deleteUserFirebase,

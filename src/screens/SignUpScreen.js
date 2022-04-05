@@ -3,18 +3,17 @@ import { Alert } from 'react-native';
 import styled from 'styled-components';
 import * as SecureStore from 'expo-secure-store';
 
-import {
-  signUpWithFirebase,
-  createUserFirebase,
-} from '../utility/firebaseUtility';
+import { createUserFirebase } from '../utility/firebaseUtility';
+
 import {
   handleAlerts,
   resetToMainScreen,
 } from '../utility/userInteractionUtility';
-import { USER_ROLE } from '../constants';
+import { USER_ROLE } from '../../constants';
 
 import SubmitButton from '../components/SubmitButton';
 import RoleSelector from '../components/RoleSelector';
+import { backendSignup } from '../utility/requests';
 
 const SignUpScreen = ({
   navigation,
@@ -52,27 +51,34 @@ const SignUpScreen = ({
     if (password === confirmPassword) {
       try {
         setIsLoading(true);
-        setName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        SecureStore.setItemAsync(
-          'user',
-          JSON.stringify({
-            name: 'asd',
-            role: 'REGULAR',
-            userUid: '1',
-            userEmail: 'someemail@gmail.com',
-          })
-        );
-        navigation.reset({
-          index: 0,
-          routes: [{ name: resetToMainScreen(userRole) }],
+        backendSignup({
+          email,
+          password,
+          name,
+          userRole,
+        }).then(() => {
+          setName('');
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          SecureStore.setItemAsync(
+            'user',
+            JSON.stringify({
+              name,
+              role: userRole,
+              userUid: '1',
+              userEmail: 'someemail@gmail.com',
+            })
+          );
+          navigation.reset({
+            index: 0,
+            routes: [{ name: resetToMainScreen(userRole) }],
+          });
+          setIsLoading(false);
         });
-        setIsLoading(false);
       } catch (e) {
         setIsLoading(false);
-        handleAlerts(error);
+        handleAlerts(e);
       }
     } else {
       Alert.alert('Passwords do not match');
