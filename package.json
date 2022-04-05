@@ -8,10 +8,11 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "lint": "eslint src/**/*.js",
-    "prettier": "prettier --write src/**/*.js",
+    "lint": "eslint src/**/*.{tsx,js}",
+    "prettier": "prettier --write src/**/*.{tsx,js}",
     "prepare": "husky install",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "4.0.0",
@@ -19,9 +20,6 @@
     "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/stack": "^6.1.1",
-    "@types/react": "^17.0.43",
-    "@types/react-native": "^0.67.3",
-    "@types/styled-components": "^5.1.24",
     "expo": "~44.0.0",
     "expo-image-picker": "^12.0.2",
     "expo-secure-store": "^11.1.1",
@@ -37,26 +35,32 @@
     "react-native-screens": "~3.10.1",
     "react-native-web": "^0.17.1",
     "styled-components": "^5.3.3",
-    "typescript": "^4.6.3",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
+    "@types/react": "^17.0.43",
+    "@types/react-native": "^0.67.3",
+    "@types/styled-components": "^5.1.24",
+    "@typescript-eslint/eslint-plugin": "^5.18.0",
+    "@typescript-eslint/parser": "^5.18.0",
     "eslint": "^8.9.0",
     "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.28.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.4",
-    "prettier": "^2.5.1"
+    "prettier": "^2.5.1",
+    "typescript": "^4.6.3"
   },
   "private": true,
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint",
-      "prettier --write"
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint"
     ]
   }
 }

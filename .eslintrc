@@ -1,6 +1,9 @@
 {
-  "extends": ["airbnb", "prettier"],
-  "plugins": ["prettier", "import"],
+  "extends": ["airbnb", "prettier"
+    // "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint","prettier", "import"],
   "parserOptions": {
     "ecmaVersion": 12,
     "ecmaFeatures": {
@@ -27,6 +30,7 @@
     "react/prop-types": [0],
     "react/function-component-definition": [0],
     "import/prefer-default-export": [0],
-    "react/no-unstable-nested-components": [0]
+    "react/no-unstable-nested-components": [0],
+    "no-use-before-define": [0]
   }
 }

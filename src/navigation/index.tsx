@@ -29,6 +29,7 @@ export default function Navigation() {
     <NavigationContainer
       ref={navigationRef}
       onReady={() => {
+        // @ts-ignore
         isReadyRef.current = true;
       }}
     >
@@ -37,16 +38,21 @@ export default function Navigation() {
   );
 }
 
+type UserData =
+  | {
+      role: string;
+    }
+  | undefined;
+
 const Stack = createStackNavigator();
 
 function RootNavigator() {
   const [userLoggedIn, setUserLoggedIn] = useState(null);
-  const [userData, setUserData] = useState(undefined);
+  const [userData, setUserData] = useState<UserData>(undefined);
   const [appState, setAppState] = useState('active');
-  useEffect(
-    () => userStateListener({ setUserLoggedIn, setUserData }),
-    [userLoggedIn, appState]
-  );
+  useEffect(() => {
+    userStateListener({ setUserLoggedIn, setUserData });
+  }, [userLoggedIn, appState]);
   useEffect(
     () =>
       userLoggedIn
@@ -56,18 +62,19 @@ function RootNavigator() {
   );
   useEffect(
     () => () => {
+      // @ts-ignore
       isReadyRef.current = false;
     },
     []
   );
-  useEffect(() =>
+  useEffect(() => {
     AppState.addEventListener('change', (nextAppState) =>
       setAppState(nextAppState)
-    )
-  );
+    );
+  });
   useEffect(() => {
     SecureStore.getItemAsync('user')
-      .then((user) => setUserData(JSON.parse(user)))
+      .then((user) => user && setUserData(JSON.parse(user)))
       .catch((err) => console.warn(err));
   }, []);
   if (userLoggedIn === null || userData === undefined) return <SplashScreen />;
