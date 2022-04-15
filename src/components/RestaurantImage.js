@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dimensions } from 'react-native';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 
 const windowWidth = Dimensions.get('window').width;
 const RestaurantImage = ({ source }) => {

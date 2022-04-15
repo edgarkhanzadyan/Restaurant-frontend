@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import * as SecureStore from 'expo-secure-store';
 
 import { createUserFirebase } from '../utility/firebaseUtility';

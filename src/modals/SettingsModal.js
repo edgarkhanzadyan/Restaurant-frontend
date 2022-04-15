@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, InteractionManager } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 
 import { signOut } from '../utility/firebaseUtility';
 

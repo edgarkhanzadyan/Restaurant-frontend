@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 
 import Navigation from './src/navigation';
 // import { initializeFirebaseApps } from './utility/firebaseUtility';
@@ -15,6 +15,6 @@ export default function App() {
   );
 }
 
-const ContainerView = styled.view`
+const ContainerView = styled.View`
   flex: 1;
 `;

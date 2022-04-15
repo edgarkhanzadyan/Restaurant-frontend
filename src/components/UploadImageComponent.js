@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Dimensions } from 'react-native';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 
 import RestaurantImage from './RestaurantImage';

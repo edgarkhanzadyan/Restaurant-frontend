@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, ActivityIndicator } from 'react-native';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import * as SecureStore from 'expo-secure-store';
 import { FontAwesome } from '@expo/vector-icons';
 

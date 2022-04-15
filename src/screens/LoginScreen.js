@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import * as SecureStore from 'expo-secure-store';
 
 import {

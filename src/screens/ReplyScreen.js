@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 
 import { submitReply } from '../utility/firebaseUtility';
 import StarComponents from '../components/StarComponents';

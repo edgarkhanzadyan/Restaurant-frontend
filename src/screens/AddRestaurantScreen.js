@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Dimensions } from 'react-native';
 

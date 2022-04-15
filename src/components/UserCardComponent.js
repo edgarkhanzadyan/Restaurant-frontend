@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { deleteUserAlert } from '../utility/userInteractionUtility';
 

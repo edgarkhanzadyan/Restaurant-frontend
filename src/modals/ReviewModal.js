@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from 'react-native';
 import Modal from 'react-native-modal';
-import styled from 'styled-components';
+import styled from 'styled-components/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { submitReview } from '../utility/firebaseUtility';
