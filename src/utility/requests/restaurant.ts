@@ -1,5 +1,6 @@
 import { FieldsAreEmpty } from '../firebaseUtility/helpers';
 import { backendUrl } from './constants';
+import { api } from './utility';
 
 type CreateRestaurantRequestBody = {
   name: string;
@@ -13,85 +14,106 @@ export const createRestaurant = ({
   description,
   location,
   image,
-}: CreateRestaurantRequestBody) => {
+}: CreateRestaurantRequestBody): Promise<unknown> => {
   if (!name || !description || !location) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/restaurant`, {
+  return api<CreateRestaurantRequestBody, unknown>(`${backendUrl}/restaurant`, {
     method: 'POST',
-    body: JSON.stringify({
+    body: {
       name,
       description,
       location,
       image,
-    }),
-    headers: {
-      'Content-type': 'application/json',
     },
-  }).then((res) => res.json());
+  });
 };
 
-type GetRestaurantsRequestBody = {
+type GetRestaurantsQueryParameters = {
   limit: number;
 };
+type GetRestaurantsRequestBody = {};
 
-export const getRestaurants = ({ limit }: GetRestaurantsRequestBody) => {
+export const getRestaurants = ({
+  limit,
+}: GetRestaurantsRequestBody &
+  GetRestaurantsQueryParameters): Promise<unknown> => {
   if (!limit) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/restaurant?${limit}`, {
-    method: 'GET',
-  }).then((res) => res.json());
+  return api<GetRestaurantsRequestBody, unknown>(
+    `${backendUrl}/restaurant?${limit}`,
+    {
+      method: 'GET',
+      body: {},
+    }
+  );
 };
 
-type GetRestaurantByIdRequestBody = {
+type GetRestaurantByIdQueryParameters = {
   restaurantId: string;
 };
+type GetRestaurantByIdRequestBody = {};
 
 export const getRestaurantById = ({
   restaurantId,
-}: GetRestaurantByIdRequestBody) => {
+}: GetRestaurantByIdRequestBody &
+  GetRestaurantByIdQueryParameters): Promise<unknown> => {
   if (!restaurantId) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/restaurant/${restaurantId}`, {
-    method: 'GET',
-  }).then((res) => res.json());
+  return api<GetRestaurantByIdRequestBody, unknown>(
+    `${backendUrl}/restaurant/${restaurantId}`,
+    {
+      method: 'GET',
+      body: {},
+    }
+  );
 };
 
-type UpdateRestaurantRequestBody = {
+type UpdateRestaurantQueryParameters = {
   restaurantId: string;
 };
+type UpdateRestaurantRequestBody = {};
 
 export const updateRestaurant = ({
   restaurantId,
-}: UpdateRestaurantRequestBody) => {
+}: UpdateRestaurantRequestBody &
+  UpdateRestaurantQueryParameters): Promise<unknown> => {
   if (!restaurantId) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/restaurant/${restaurantId}`, {
-    method: 'PUT',
-  }).then((res) => res.json());
+  return api<UpdateRestaurantRequestBody, unknown>(
+    `${backendUrl}/restaurant/${restaurantId}`,
+    {
+      method: 'PUT',
+      body: {},
+    }
+  );
 };
 
-type DeleteRestaurantRequestBody = {
+type DeleteRestaurantQueryParameters = {
   restaurantId: string;
 };
+type DeleteRestaurantRequestBody = {};
 
 export const deleteRestaurant = ({
   restaurantId,
-}: DeleteRestaurantRequestBody) => {
+}: DeleteRestaurantRequestBody &
+  DeleteRestaurantQueryParameters): Promise<unknown> => {
   if (!restaurantId) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/restaurant/${restaurantId}`, {
-    method: 'DELETE',
-  }).then((res) => res.json());
+  return api<DeleteRestaurantRequestBody, unknown>(
+    `${backendUrl}/restaurant/${restaurantId}`,
+    {
+      method: 'DELETE',
+      body: {},
+    }
+  );
 };
-
-// export const signup = ({ email, password, role }) =>

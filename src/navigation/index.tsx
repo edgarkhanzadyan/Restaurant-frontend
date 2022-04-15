@@ -18,7 +18,7 @@ import SplashScreen from '../screens/SplashScreen';
 import AddRestaurantScreen from '../screens/AddRestaurantScreen';
 import ReplyScreen from '../screens/ReplyScreen';
 
-import { USER_ROLE } from '../../constants';
+import { USER_ROLE } from '../constants';
 
 import { RootStackParamList } from './types';
 

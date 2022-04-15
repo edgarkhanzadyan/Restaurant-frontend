@@ -1,36 +1,36 @@
 import { FieldsAreEmpty } from '../firebaseUtility/helpers';
 import { backendUrl } from './constants';
+import { api } from './utility';
 
 type CreateReviewRequestBody = {
-  restaurantId: string;
+  restaurant: string;
   comment: string;
   score: number;
 };
 
 export const createReview = ({
-  restaurantId,
+  restaurant,
   comment,
   score,
-}: CreateReviewRequestBody) => {
-  if (!restaurantId || !comment || !score) {
+}: CreateReviewRequestBody): Promise<unknown> => {
+  if (!restaurant || !comment || !score) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/review`, {
+  return api<CreateReviewRequestBody, unknown>(`${backendUrl}/review`, {
     method: 'POST',
-    body: JSON.stringify({
-      restaurant: restaurantId,
+    body: {
+      restaurant,
       comment,
       score,
-    }),
-    headers: {
-      'Content-type': 'application/json',
     },
-  }).then((res) => res.json());
+  });
 };
 
-type UpdateReviewRequestBody = {
+type UpdateReviewQueryParameters = {
   reviewId: string;
+};
+type UpdateReviewRequestBody = {
   comment: string;
   score: number;
 };
@@ -39,105 +39,112 @@ export const updateReview = ({
   reviewId,
   comment,
   score,
-}: UpdateReviewRequestBody) => {
+}: UpdateReviewRequestBody & UpdateReviewQueryParameters): Promise<unknown> => {
   if (!reviewId || !comment || !score) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/review/${reviewId}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      comment,
-      score,
-    }),
-    headers: {
-      'Content-type': 'application/json',
-    },
-  }).then((res) => res.json());
+  return api<UpdateReviewRequestBody, unknown>(
+    `${backendUrl}/review/${reviewId}`,
+    {
+      method: 'PUT',
+      body: {
+        comment,
+        score,
+      },
+    }
+  );
 };
 
-type DeleteReviewRequestBody = {
+type DeleteReviewQueryParameters = {
   reviewId: string;
 };
+type DeleteReviewRequestBody = {};
 
-export const deleteReview = ({ reviewId }: DeleteReviewRequestBody) => {
+export const deleteReview = ({
+  reviewId,
+}: DeleteReviewRequestBody & DeleteReviewQueryParameters): Promise<unknown> => {
   if (!reviewId) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/review/${reviewId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-type': 'application/json',
-    },
-  }).then((res) => res.json());
+  return api<DeleteReviewRequestBody, unknown>(
+    `${backendUrl}/review/${reviewId}`,
+    {
+      method: 'DELETE',
+      body: {},
+    }
+  );
 };
 
-type CreateReviewReplyRequestBody = {
+type CreateReviewReplyQueryParameters = {
   reviewId: string;
+};
+type CreateReviewReplyRequestBody = {
   comment: string;
 };
-
 export const createReviewReply = ({
   reviewId,
   comment,
-}: CreateReviewReplyRequestBody) => {
+}: CreateReviewReplyRequestBody &
+  CreateReviewReplyQueryParameters): Promise<unknown> => {
   if (!reviewId || !comment) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/review/${reviewId}/reply`, {
+  return api(`${backendUrl}/review/${reviewId}/reply`, {
     method: 'POST',
-    body: JSON.stringify({
+    body: {
       comment,
-    }),
-    headers: {
-      'Content-type': 'application/json',
     },
-  }).then((res) => res.json());
+  });
 };
 
-type UpdateReviewReplyRequestBody = {
+type UpdateReviewReplyQueryParameters = {
   reviewId: string;
+};
+type UpdateReviewReplyRequestBody = {
   comment: string;
 };
 
 export const updateReviewReply = ({
   reviewId,
   comment,
-}: UpdateReviewReplyRequestBody) => {
+}: UpdateReviewReplyRequestBody &
+  UpdateReviewReplyQueryParameters): Promise<unknown> => {
   if (!reviewId || !comment) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/review/${reviewId}/reply`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      comment,
-    }),
-    headers: {
-      'Content-type': 'application/json',
-    },
-  }).then((res) => res.json());
+  return api<UpdateReviewReplyRequestBody, unknown>(
+    `${backendUrl}/review/${reviewId}/reply`,
+    {
+      method: 'PUT',
+      body: {
+        comment,
+      },
+    }
+  );
 };
 
-type DeleteReviewReplyRequestBody = {
+type DeleteReviewReplyQueryParameters = {
   reviewId: string;
   replyId: string;
 };
-
+type DeleteReviewReplyRequestBody = {};
 export const deleteReviewReply = ({
   reviewId,
   replyId,
-}: DeleteReviewReplyRequestBody) => {
+}: DeleteReviewReplyRequestBody & DeleteReviewReplyQueryParameters) => {
   if (!reviewId || !replyId) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/review/${reviewId}/reply/${replyId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-type': 'application/json',
-    },
-  }).then((res) => res.json());
+  return api<DeleteReviewReplyRequestBody, unknown>(
+    `${backendUrl}/review/${reviewId}/reply/${replyId}`,
+    {
+      method: 'DELETE',
+      body: {},
+    }
+  );
 };

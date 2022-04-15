@@ -1,72 +1,78 @@
 import { FieldsAreEmpty } from '../firebaseUtility/helpers';
 import { backendUrl } from './constants';
 import { UserRole } from '../../types';
+import { api } from './utility';
 
 type LoginRequestBody = {
   email: string;
   password: string;
 };
-
-export const login = ({ email, password }: LoginRequestBody) => {
+type LoginResponseBody = {
+  accessToken: string;
+};
+export const login = ({
+  email,
+  password,
+}: LoginRequestBody): Promise<LoginResponseBody> => {
   if (!email || !password) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/user/login`, {
+  return api<LoginRequestBody, LoginResponseBody>(`${backendUrl}/user/login`, {
     method: 'POST',
-    body: JSON.stringify({
+    body: {
       password,
       email,
-    }),
-    headers: {
-      'Content-type': 'application/json',
     },
-  }).then((res) => res.json());
+  });
 };
 
 type SignupRequestBody = {
   email: string;
   password: string;
   name: string;
-  userRole: UserRole;
+  role: UserRole;
 };
-
-export const signup = ({
+type SignupResponseBody = {
+  accessToken: string;
+};
+export const signUp = ({
   email,
   password,
   name,
-  userRole,
-}: SignupRequestBody) => {
-  if (!email || !password || !name || !userRole) {
+  role,
+}: SignupRequestBody): Promise<SignupResponseBody> => {
+  if (!email || !password || !name || !role) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/user/signup`, {
-    method: 'POST',
-    body: JSON.stringify({
-      password,
-      email,
-      name,
-      role: userRole,
-    }),
-    headers: {
-      'Content-type': 'application/json',
-    },
-  }).then((res) => res.json());
+  return api<SignupRequestBody, SignupResponseBody>(
+    `${backendUrl}/user/signup`,
+    {
+      method: 'POST',
+      body: {
+        password,
+        email,
+        name,
+        role,
+      },
+    }
+  );
 };
 
-type DeleteUserRequestBody = {
+type DeleteUserQueryParameters = {
   userId: string;
 };
-
-export const deleteUser = ({ userId }: DeleteUserRequestBody) => {
+type DeleteUserRequestBody = {};
+export const deleteUser = ({
+  userId,
+}: DeleteUserRequestBody & DeleteUserQueryParameters): Promise<unknown> => {
   if (!userId) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return fetch(`${backendUrl}/user/${userId}`, {
+  return api<DeleteUserRequestBody, unknown>(`${backendUrl}/user/${userId}`, {
     method: 'DELETE',
-  }).then((res) => res.json());
+    body: {},
+  });
 };
-
-// export const signup = ({ email, password, role }) =>

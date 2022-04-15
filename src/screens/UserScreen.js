@@ -20,7 +20,7 @@ import {
 import UpdatePasswordModal from '../modals/UpdatePasswordModal';
 import RestaurantCardComponent from '../components/RestaurantCardComponent';
 import RoleSelector from '../components/RoleSelector';
-import { USER_ROLE } from '../../constants';
+import { USER_ROLE } from '../constants';
 
 const UserScreen = ({
   navigation,

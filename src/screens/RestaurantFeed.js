@@ -11,7 +11,7 @@ import {
   getRestaurantDataFilteredByOwner,
 } from '../utility/firebaseUtility';
 import SettingsModal from '../modals/SettingsModal';
-import { USER_ROLE } from '../../constants';
+import { USER_ROLE } from '../constants';
 
 const ListHeader = ({ navigation, role }) => (
   <RestaurantAddButton

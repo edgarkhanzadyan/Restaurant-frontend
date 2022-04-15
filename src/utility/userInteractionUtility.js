@@ -1,5 +1,5 @@
 import { ActionSheetIOS, Alert } from 'react-native';
-import { USER_ROLE } from '../../constants';
+import { USER_ROLE } from '../constants';
 import {
   deleteReview,
   deleteReviewReply,
@@ -208,7 +208,7 @@ export const handleAlerts = (error) => {
     Alert.alert('Internet connection failed');
     return;
   }
-  console.warn(error.code);
+  console.error(error.code);
 };
 
 export const deleteRestaurantAlert = ({ restaurantName, restaurantId }) =>
