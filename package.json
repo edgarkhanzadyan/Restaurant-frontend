@@ -15,6 +15,7 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
+    "@babel/preset-typescript": "^7.16.7",
     "@react-native-community/datetimepicker": "4.0.0",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-navigation/bottom-tabs": "^6.2.0",
