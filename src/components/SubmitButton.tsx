@@ -1,7 +1,19 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import styled from 'styled-components/native';
+import { TouchableOpacity } from 'react-native';
 
-const SubmitButton = ({ title, disabled, isInverse, onPress, style }) => (
+type SubmitButtonProps = {
+  title: string;
+  isInverse: boolean;
+} & ComponentProps<typeof TouchableOpacity>;
+
+const SubmitButton = ({
+  title,
+  disabled,
+  isInverse,
+  onPress,
+  style,
+}: SubmitButtonProps) => (
   <SubmitButtonWrapper
     disabled={disabled}
     isInverse={isInverse}
@@ -16,7 +28,10 @@ const SubmitButton = ({ title, disabled, isInverse, onPress, style }) => (
 
 export default SubmitButton;
 
-const SubmitButtonWrapper = styled.TouchableOpacity`
+const SubmitButtonWrapper = styled.TouchableOpacity<{
+  isInverse: boolean;
+  disabled: boolean | null | undefined;
+}>`
   background-color: ${(props) => {
     if (props.isInverse) {
       return 'white';
@@ -35,7 +50,10 @@ const SubmitButtonWrapper = styled.TouchableOpacity`
   margin: 5px 0px;
 `;
 
-const SubmitButtonText = styled.Text`
+const SubmitButtonText = styled.Text<{
+  isInverse: boolean;
+  disabled: boolean | null | undefined;
+}>`
   color: ${(props) => {
     if (props.isInverse) {
       if (props.disabled) {

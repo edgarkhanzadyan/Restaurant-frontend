@@ -2,12 +2,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState, useEffect } from 'react';
 import { AppState } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
 
-import {
-  userStateListener,
-  userStateListenerDatabase,
-} from '../utility/firebaseUtility';
+import { userStateListener } from '../utility/firebaseUtility';
 
 import AdminTabNavigator from './AdminTabNavigator';
 import RestaurantOwnerTabNavigator from './RestaurantOwnerTabNavigator';
@@ -23,6 +19,8 @@ import AddRestaurantScreen from '../screens/AddRestaurantScreen';
 import ReplyScreen from '../screens/ReplyScreen';
 
 import { USER_ROLE } from '../../constants';
+
+import { RootStackParamList } from './types';
 
 export default function Navigation() {
   return (
@@ -44,7 +42,7 @@ type UserData =
     }
   | undefined;
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   const [userLoggedIn, setUserLoggedIn] = useState(null);
@@ -53,43 +51,46 @@ function RootNavigator() {
   useEffect(() => {
     userStateListener({ setUserLoggedIn, setUserData });
   }, [userLoggedIn, appState]);
-  useEffect(
-    () =>
-      userLoggedIn
-        ? userStateListenerDatabase({ setUserLoggedIn, setUserData })
-        : () => {},
-    [userLoggedIn, appState]
-  );
-  useEffect(
-    () => () => {
-      // @ts-ignore
-      isReadyRef.current = false;
-    },
-    []
-  );
+  // useEffect(
+  //   () =>
+  //     userLoggedIn
+  //       ? userStateListenerDatabase({ setUserLoggedIn, setUserData })
+  //       : () => {},
+  //   [userLoggedIn, appState]
+  // );
+  // useEffect(
+  //   () => () => {
+  //     // @ts-ignore
+  //     isReadyRef.current = false;
+  //   },
+  //   []
+  // );
   useEffect(() => {
     AppState.addEventListener('change', (nextAppState) =>
       setAppState(nextAppState)
     );
   });
-  useEffect(() => {
-    SecureStore.getItemAsync('user')
-      .then((user) => user && setUserData(JSON.parse(user)))
-      .catch((err) => console.warn(err));
-  }, []);
+  // useEffect(() => {
+  //   SecureStore.getItemAsync('user')
+  //     .then((user) => user && setUserData(JSON.parse(user)))
+  //     .catch((err) => console.warn(err));
+  // }, []);
   if (userLoggedIn === null || userData === undefined) return <SplashScreen />;
-  const initialRoute = () => {
-    if (userLoggedIn && userData && userData.role === USER_ROLE.ADMIN)
-      return 'AdminScreen';
-    if (
-      userLoggedIn &&
-      userData &&
-      userData.role === USER_ROLE.RESTAURANT_OWNER
-    )
-      return 'RestaurantOwnerScreen';
-    if (userLoggedIn) return 'RestaurantFeed';
+
+  const initialRoute = (): keyof RootStackParamList => {
+    if (userLoggedIn && userData) {
+      switch (userData.role) {
+        case USER_ROLE.ADMIN:
+          return 'AdminScreen';
+        case USER_ROLE.RESTAURANT_OWNER:
+          return 'RestaurantOwnerScreen';
+        case USER_ROLE.REGULAR:
+          return 'RestaurantFeed';
+      }
+    }
     return 'LoginScreen';
   };
+
   return (
     <Stack.Navigator initialRouteName={initialRoute()}>
       <Stack.Screen

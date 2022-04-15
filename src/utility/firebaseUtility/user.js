@@ -28,6 +28,7 @@ const signUserOutWithListeners = ({ setUserLoggedIn, setUserData }) => {
 export const userStateListener = ({ setUserLoggedIn, setUserData }) => {
   SecureStore.getItemAsync('user').then((user) => {
     const userData = JSON.parse(user);
+    setUserData(userData);
     if (userData) {
       setUserLoggedIn(true);
     } else {
