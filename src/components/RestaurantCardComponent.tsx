@@ -4,25 +4,33 @@ import { FontAwesome } from '@expo/vector-icons';
 import RestaurantImage from './RestaurantImage';
 import { USER_ROLE } from '../constants';
 import { deleteRestaurantAlert } from '../utility/userInteractionUtility';
+import { Restaurant, User } from '../types';
+import { RestaurantFeedNavigate } from '../screens/RestaurantFeed';
 
-const RestaurantCardComponent = ({ item, navigation, userData }) => (
+type Props = {
+  restaurant: Restaurant;
+  navigate: RestaurantFeedNavigate;
+  userData: User;
+};
+
+const RestaurantCardComponent = ({ restaurant, navigate, userData }: Props) => (
   <RestaurantWrapper
     onPress={() =>
-      navigation.navigate('RestaurantScreen', {
-        restaurantId: item.id,
+      navigate('RestaurantScreen', {
+        restaurantId: restaurant._id,
         userData,
       })
     }
   >
     <RestaurantHeader>
-      <RestaurantTitle>{item.name}</RestaurantTitle>
+      <RestaurantTitle>{restaurant.name}</RestaurantTitle>
       {(userData.role === USER_ROLE.ADMIN ||
         userData.role === USER_ROLE.RESTAURANT_OWNER) && (
         <DeleteButton
           onPress={() =>
             deleteRestaurantAlert({
-              restaurantName: item.name,
-              restaurantId: item.id,
+              restaurantName: restaurant.name,
+              restaurantId: restaurant._id,
             })
           }
         >
@@ -30,19 +38,19 @@ const RestaurantCardComponent = ({ item, navigation, userData }) => (
         </DeleteButton>
       )}
     </RestaurantHeader>
-    {item.averageScore && (
+    {restaurant.averageScore && (
       <RestaurantScore>
-        Average rating: {item.averageScore.toFixed(2)}
+        Average rating: {restaurant.averageScore.toFixed(2)}
       </RestaurantScore>
     )}
     <RestaurantDescription>
-      {item.description.length < 140
-        ? item.description
-        : `${item.description.substring(140)}...`}
+      {restaurant.description.length < 140
+        ? restaurant.description
+        : `${restaurant.description.substring(140)}...`}
     </RestaurantDescription>
     <RestaurantImage
       source={{
-        uri: item.image,
+        uri: restaurant.image,
       }}
     />
   </RestaurantWrapper>

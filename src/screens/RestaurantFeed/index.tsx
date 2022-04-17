@@ -7,26 +7,30 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 import RestaurantCardComponent from '../../components/RestaurantCardComponent';
 
-import {
-  getRestaurantData,
-  getRestaurantDataFilteredByOwner,
-} from '../../utility/firebaseUtility';
+// import {
+//   getRestaurantData,
+//   getRestaurantDataFilteredByOwner,
+// } from '../../utility/firebaseUtility';
 import SettingsModal from '../../modals/SettingsModal';
 import { USER_ROLE } from '../../constants';
 import { RootStackParamList } from '../../navigation/types';
-import { User, UserRole } from '../../types';
+import { Restaurant, User, UserRole } from '../../types';
 import { getUser } from '../../utility/secureStore';
+import { getRestaurants } from '../../utility/requests';
 
-type ListHeaderProps = StackScreenProps<
+export type RestaurantFeedNavigate = StackScreenProps<
   RootStackParamList,
   'RestaurantFeed'
-> & {
+>['navigation']['navigate'];
+
+type ListHeaderProps = {
+  navigate: RestaurantFeedNavigate;
   role: UserRole;
 };
 
-const ListHeader = ({ navigation, role }: ListHeaderProps) => (
+const ListHeader = ({ navigate, role }: ListHeaderProps) => (
   <RestaurantAddButton
-    onPress={() => navigation.navigate('AddRestaurantScreen', { role })}
+    onPress={() => navigate('AddRestaurantScreen', { role })}
   >
     <RestaurantAddButtonTitle>Add restaurant</RestaurantAddButtonTitle>
     <FontAwesome name="plus-circle" size={40} color="green" />
@@ -41,7 +45,7 @@ type RestaurantFeedProps = StackScreenProps<
 const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [userData, setUserData] = useState<User | null>(null);
-  const [restaurantData, setRestaurantData] = useState([]);
+  const [restaurantData, setRestaurantData] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -69,34 +73,41 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
         // });
         case USER_ROLE.ADMIN:
         case USER_ROLE.REGULAR:
-          return getRestaurantData({ setRestaurantData, setIsLoading });
+          getRestaurants({ limit: 5 })
+            .then((restaurants) => {
+              setRestaurantData(restaurants);
+              setIsLoading(false);
+            })
+            .catch((e) => console.log(e));
+          break;
+        // return getRestaurantData({ setRestaurantData, setIsLoading });
         default:
           console.warn('Role does not exist');
       }
     }
     return () => {};
   }, [userData]);
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: Restaurant }) => (
     <RestaurantCardComponent
-      item={item}
-      navigation={navigation}
+      restaurant={item}
+      navigate={navigation.navigate}
       userData={userData}
     />
   );
   return (
     <RestaurantFeedContainer>
       {userData && !isLoading ? (
-        <FlatList
+        <FlatList<Restaurant>
           ListHeaderComponent={
             userData.role !== USER_ROLE.REGULAR ? (
-              <ListHeader navigation={navigation} role={userData.role} />
+              <ListHeader navigate={navigation.navigate} role={userData.role} />
             ) : (
               <View />
             )
           }
           data={restaurantData}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
           initialNumToRender={3}
         />
       ) : (
@@ -105,7 +116,7 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
       <SettingsModal
         setModalIsOpen={setModalIsOpen}
         modalIsOpen={modalIsOpen}
-        userUid={userData && userData.userUid}
+        userUid={userData && userData.email}
       />
     </RestaurantFeedContainer>
   );

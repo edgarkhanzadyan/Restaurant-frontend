@@ -1,4 +1,4 @@
-import { UserRole } from '../types';
+import { User, UserRole } from '../types';
 
 export type RootStackParamList = {
   LoginScreen: undefined;
@@ -9,5 +9,8 @@ export type RootStackParamList = {
   UserScreen: undefined;
   AddRestaurantScreen: { role: UserRole };
   ReplyScreen: undefined;
-  RestaurantScreen: undefined;
+  RestaurantScreen: {
+    restaurantId: string;
+    userData: User;
+  };
 };

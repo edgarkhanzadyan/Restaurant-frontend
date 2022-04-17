@@ -1,3 +1,5 @@
+import { getUser } from '../secureStore';
+
 type requestMethods = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 export const logMiddleware = <T>(res: T) => {
@@ -5,17 +7,30 @@ export const logMiddleware = <T>(res: T) => {
   return res;
 };
 
+type RequestOptions = {
+  body?: string;
+  method: requestMethods;
+};
+
 export const api = <RequestBody, T>(
   url: string,
-  options: { body: RequestBody; method: requestMethods }
+  options: { body?: RequestBody; method: requestMethods }
 ): Promise<T> => {
-  const stringifiedOptions = { ...options, body: JSON.stringify(options.body) };
-  return fetch(url, {
-    ...stringifiedOptions,
-    headers: {
-      'Content-type': 'application/json',
-    },
-  })
+  const stringifiedOptions: RequestOptions = {
+    ...options,
+    body: options.body && JSON.stringify(options.body),
+  };
+  console.log(stringifiedOptions);
+  return getUser()
+    .then((user) =>
+      fetch(url, {
+        ...stringifiedOptions,
+        headers: {
+          'Content-type': 'application/json',
+          authorization: user ? `Bearer ${user.token}` : undefined,
+        },
+      })
+    )
     .then(logMiddleware)
     .then((response) => {
       if (!response.ok) {

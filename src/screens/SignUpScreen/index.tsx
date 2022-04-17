@@ -72,7 +72,7 @@ const SignUpScreen = ({
           return setUser({
             name,
             role: userRole,
-            accessToken: response.accessToken,
+            token: response.token,
             email,
           });
         })

@@ -1,3 +1,4 @@
+import { Restaurant } from '../../types';
 import { FieldsAreEmpty } from '../firebaseUtility/helpers';
 import { backendUrl } from './constants';
 import { api } from './utility';
@@ -37,17 +38,17 @@ type GetRestaurantsRequestBody = {};
 
 export const getRestaurants = ({
   limit,
-}: GetRestaurantsRequestBody &
-  GetRestaurantsQueryParameters): Promise<unknown> => {
+}: GetRestaurantsRequestBody & GetRestaurantsQueryParameters): Promise<
+  Restaurant[]
+> => {
   if (!limit) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return api<GetRestaurantsRequestBody, unknown>(
-    `${backendUrl}/restaurant?${limit}`,
+  return api<GetRestaurantsRequestBody, Restaurant[]>(
+    `${backendUrl}/restaurant?limit=${limit}`,
     {
       method: 'GET',
-      body: {},
     }
   );
 };
@@ -69,7 +70,6 @@ export const getRestaurantById = ({
     `${backendUrl}/restaurant/${restaurantId}`,
     {
       method: 'GET',
-      body: {},
     }
   );
 };

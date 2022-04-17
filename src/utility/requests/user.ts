@@ -8,7 +8,7 @@ type LoginRequestBody = {
   password: string;
 };
 type LoginResponseBody = {
-  accessToken: string;
+  token: string;
 };
 export const login = ({
   email,
@@ -34,7 +34,7 @@ type SignupRequestBody = {
   role: UserRole;
 };
 type SignupResponseBody = {
-  accessToken: string;
+  token: string;
 };
 export const signUp = ({
   email,

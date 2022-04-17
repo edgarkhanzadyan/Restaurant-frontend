@@ -3,7 +3,10 @@ import { Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 
 const windowWidth = Dimensions.get('window').width;
-const RestaurantImage = ({ source }) => {
+
+type Props = { source: { uri: string } };
+
+const RestaurantImage = ({ source }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <RestaurantImgWrapper>

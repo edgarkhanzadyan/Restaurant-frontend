@@ -30,11 +30,12 @@ const LoginPage = ({
       .then((response) => {
         setEmail('');
         setPassword('');
+        console.log(response);
         return setUser({
           name: 'asd',
           role: 'regular',
           email,
-          accessToken: response.accessToken,
+          token: response.token,
         });
       })
       .then(() => {
