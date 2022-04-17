@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import type { StackScreenProps } from '@react-navigation/stack';
 import type { RootStackParamList } from '../../navigation/types';
 import {
@@ -16,6 +15,7 @@ import {
   PasswordInput,
   RegisterText,
 } from './styles';
+import { setUser } from '../../utility/secureStore';
 
 const LoginPage = ({
   navigation,
@@ -25,30 +25,29 @@ const LoginPage = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const signIn = () => {
-    try {
-      setIsLoading(true);
-      login({ email, password }).then(() => {
+    setIsLoading(true);
+    login({ email, password })
+      .then((response) => {
         setEmail('');
         setPassword('');
-        SecureStore.setItemAsync(
-          'user',
-          JSON.stringify({
-            name: 'asd',
-            role: 'REGULAR',
-            userUid: '1',
-            userEmail: 'someemail@gmail.com',
-          })
-        );
+        return setUser({
+          name: 'asd',
+          role: 'regular',
+          email,
+          accessToken: response.accessToken,
+        });
+      })
+      .then(() => {
         navigation.reset({
           index: 0,
           routes: [{ name: resetToMainScreen('REGULAR') }],
         });
         setIsLoading(false);
+      })
+      .catch((e) => {
+        setIsLoading(false);
+        handleAlerts(e);
       });
-    } catch (e) {
-      setIsLoading(false);
-      handleAlerts(e);
-    }
   };
 
   return (

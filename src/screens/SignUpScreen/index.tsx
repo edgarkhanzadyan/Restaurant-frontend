@@ -21,6 +21,7 @@ import {
   NameInput,
   PasswordInput,
 } from './styles';
+import { setUser } from '../../utility/secureStore';
 
 const SignUpScreen = ({
   navigation,
@@ -61,23 +62,21 @@ const SignUpScreen = ({
         email,
         password,
         name,
-        userRole,
+        role: userRole,
       })
         .then((response) => {
-          console.log(response);
           setName('');
           setEmail('');
           setPassword('');
           setConfirmPassword('');
-          SecureStore.setItemAsync(
-            'user',
-            JSON.stringify({
-              name,
-              role: userRole,
-              userUid: '1',
-              userEmail: email,
-            })
-          );
+          return setUser({
+            name,
+            role: userRole,
+            accessToken: response.accessToken,
+            email,
+          });
+        })
+        .then(() => {
           navigation.reset({
             index: 0,
             routes: [{ name: resetToMainScreen(userRole) }],

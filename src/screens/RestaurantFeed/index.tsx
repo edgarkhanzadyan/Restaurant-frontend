@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, Button, ActivityIndicator, View } from 'react-native';
 import styled from 'styled-components/native';
-import * as SecureStore from 'expo-secure-store';
-import { FontAwesome } from '@expo/vector-icons';
 
-import RestaurantCardComponent from '../components/RestaurantCardComponent';
+import { FontAwesome } from '@expo/vector-icons';
+import { StackScreenProps } from '@react-navigation/stack';
+
+import RestaurantCardComponent from '../../components/RestaurantCardComponent';
 
 import {
   getRestaurantData,
   getRestaurantDataFilteredByOwner,
-} from '../utility/firebaseUtility';
-import SettingsModal from '../modals/SettingsModal';
-import { USER_ROLE } from '../constants';
+} from '../../utility/firebaseUtility';
+import SettingsModal from '../../modals/SettingsModal';
+import { USER_ROLE } from '../../constants';
+import { RootStackParamList } from '../../navigation/types';
+import { User, UserRole } from '../../types';
+import { getUser } from '../../utility/secureStore';
 
-const ListHeader = ({ navigation, role }) => (
+type ListHeaderProps = StackScreenProps<
+  RootStackParamList,
+  'RestaurantFeed'
+> & {
+  role: UserRole;
+};
+
+const ListHeader = ({ navigation, role }: ListHeaderProps) => (
   <RestaurantAddButton
     onPress={() => navigation.navigate('AddRestaurantScreen', { role })}
   >
@@ -22,9 +33,14 @@ const ListHeader = ({ navigation, role }) => (
   </RestaurantAddButton>
 );
 
-const RestaurantFeed = ({ navigation }) => {
+type RestaurantFeedProps = StackScreenProps<
+  RootStackParamList,
+  'RestaurantFeed'
+>;
+
+const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [restaurantData, setRestaurantData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,20 +52,21 @@ const RestaurantFeed = ({ navigation }) => {
     });
   }, [navigation]);
   useEffect(() => {
-    SecureStore.getItemAsync('user')
-      .then((user) => setUserData(JSON.parse(user)))
-      .catch((err) => console.warn(err));
+    getUser()
+      .then(setUserData)
+      .catch((err) => console.error(err));
   }, []);
   useEffect(() => {
     setIsLoading(true);
     if (userData) {
       switch (userData.role) {
         case USER_ROLE.RESTAURANT_OWNER:
-          return getRestaurantDataFilteredByOwner({
-            setRestaurantData,
-            setIsLoading,
-            userUid: userData.userUid,
-          });
+          return;
+        // return getRestaurantDataFilteredByOwner({
+        //   setRestaurantData,
+        //   setIsLoading,
+        //   userUid: userData.userUid,
+        // });
         case USER_ROLE.ADMIN:
         case USER_ROLE.REGULAR:
           return getRestaurantData({ setRestaurantData, setIsLoading });
