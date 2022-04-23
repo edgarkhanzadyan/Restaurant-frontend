@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { Button, View } from 'react-native';
-import styled, { css } from 'styled-components';
+import { ActivityIndicator, Button, View } from 'react-native';
+import styled, { css } from 'styled-components/native';
 
-import ReviewModal from '../modals/ReviewModal';
-import UploadImageComponent from '../components/UploadImageComponent';
-import ReplyComponent from '../components/ReplyComponent';
-import ReviewComponent from '../components/ReviewComponent';
-import RestaurantImage from '../components/RestaurantImage';
-import { USER_ROLE } from '../constants';
-import {
-  getRestaurantInfo,
-  updateRestaurantData,
-} from '../utility/firebaseUtility';
+import ReviewModal from '../../modals/ReviewModal';
+import UploadImageComponent from '../../components/UploadImageComponent';
+import ReplyComponent from '../../components/ReplyComponent';
+import ReviewComponent from '../../components/ReviewComponent';
+import RestaurantImage from '../../components/RestaurantImage';
+import { USER_ROLE } from '../../constants';
 import {
   reviewActionSheetWrapper,
   replyActionSheetWrapper,
   editInfoActionSheet,
-} from '../utility/userInteractionUtility';
+} from '../../utility/userInteractionUtility';
+
+import type { StackScreenProps } from '@react-navigation/stack';
+import type { RootStackParamList } from '../../navigation/types';
+import { getRestaurantById } from '../../utility/requests';
+import { FullRestaurant } from '../../types';
 
 const RestaurantScreen = ({
   navigation,
   route: {
     params: { userData, restaurantId },
   },
-}) => {
-  const [restaurantInfo, setRestaurantInfo] = useState({});
+}: StackScreenProps<RootStackParamList, 'RestaurantScreen'>) => {
+  const [restaurantInfo, setRestaurantInfo] = useState<FullRestaurant | null>(
+    null
+  );
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [commentToEdit, setCommentToEdit] = useState(null);
@@ -34,54 +37,62 @@ const RestaurantScreen = ({
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantDescription, setRestaurantDescription] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
-  const [imgUrl, setImgUrl] = useState(null);
+  const [imgUrl, setImgUrl] = useState('');
 
-  const resetRestrauntInfo = () => {
-    setRestaurantName(restaurantInfo.name);
-    setRestaurantDescription(restaurantInfo.description);
-    setRestaurantLocation(restaurantInfo.location);
-    setImgUrl(restaurantInfo.image);
+  const resetRestaurantInfo = () => {
+    if (restaurantInfo) {
+      setRestaurantName(restaurantInfo.name);
+      setRestaurantDescription(restaurantInfo.description);
+      setRestaurantLocation(restaurantInfo.location);
+      setImgUrl(restaurantInfo.image);
+    }
   };
 
-  useEffect(() => getRestaurantInfo({ restaurantId, setRestaurantInfo }), []);
   useEffect(() => {
-    resetRestrauntInfo();
+    getRestaurantById({ restaurantId }).then((restaurantData) =>
+      setRestaurantInfo(restaurantData)
+    );
+  }, []);
+  useEffect(() => {
+    resetRestaurantInfo();
   }, [restaurantInfo]);
 
   useEffect(() => {
     const headerRight = () => {
-      if (userData.role !== USER_ROLE.REGULAR) {
-        if (isEditing) {
-          return (
-            <Button
-              onPress={() => {
-                editInfoActionSheet({
-                  onEdit: () =>
-                    updateRestaurantData({
-                      restaurantName: restaurantName.trim(),
-                      restaurantDescription: restaurantDescription.trim(),
-                      restaurantLocation: restaurantLocation.trim(),
-                      imgUrl,
-                      restaurantId,
-                    }).then(() => {
-                      setIsEditing(false);
-                    }),
-                  onCancel: () => {
-                    setIsEditing(false);
-                    resetRestrauntInfo();
-                  },
-                });
-              }}
-              title="Done"
-            />
-          );
-        }
-        return <Button onPress={() => setIsEditing(true)} title="Edit" />;
-      }
+      // if (userData.role !== USER_ROLE.REGULAR) {
+      //   if (isEditing) {
+      //     return (
+      //       <Button
+      //         onPress={() => {
+      //           editInfoActionSheet({
+      //             onEdit: () =>
+      //               updateRestaurantData({
+      //                 restaurantName: restaurantName.trim(),
+      //                 restaurantDescription: restaurantDescription.trim(),
+      //                 restaurantLocation: restaurantLocation.trim(),
+      //                 imgUrl,
+      //                 restaurantId,
+      //               }).then(() => {
+      //                 setIsEditing(false);
+      //               }),
+      //             onCancel: () => {
+      //               setIsEditing(false);
+      //               resetRestrauntInfo();
+      //             },
+      //           });
+      //         }}
+      //         title="Done"
+      //       />
+      //     );
+      //   }
+      //   return <Button onPress={() => setIsEditing(true)} title="Edit" />;
+      // }
       return <View />;
     };
     navigation.setOptions({ headerRight });
   });
+
+  if (!restaurantInfo) return <ActivityIndicator />;
 
   const showLeaveReviewButton = () => {
     if (userData.role === USER_ROLE.RESTAURANT_OWNER) return false;
@@ -97,11 +108,11 @@ const RestaurantScreen = ({
     restaurantInfo.reviews &&
     restaurantInfo.reviews.map((rev) => (
       <ReviewComponent
-        id={rev.id}
-        key={rev.id}
-        userName={rev.userName}
+        id={rev._id}
+        key={rev._id}
+        userName={rev.reviewer}
         score={rev.score}
-        dateTimestamp={rev.dateTimestamp}
+        dateTimestamp={rev.createdAt}
         restaurantId={restaurantId}
         comment={rev.comment}
         commentToEdit={commentToEdit}
@@ -113,18 +124,18 @@ const RestaurantScreen = ({
         openActionSheet={() =>
           reviewActionSheetWrapper({
             restaurantId,
-            reviewId: rev.id,
+            reviewId: rev._id,
             isCommentReplied: !!rev.reply,
-            creatorId: rev.creatorId,
+            creatorId: rev.reviewer,
             userData,
             edit: () => {
               setCommentToReply(null);
-              setCommentToEdit(rev.id);
+              setCommentToEdit(rev._id);
               setCommentToEditText(rev.comment);
             },
             reply: () => {
               setCommentToEdit(null);
-              setCommentToReply(rev.id);
+              setCommentToReply(rev._id);
               setCommentToEditText('');
             },
           })

@@ -19,4 +19,17 @@ export type Restaurant = {
   image: string;
 };
 
-export type Review = {};
+export type FullRestaurant = Restaurant & {
+  popularity: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type Review = {
+  _id: string;
+  reviewer: string;
+  restaurant: string;
+  comment: 'cool';
+  score: 3;
+  createdAt: string;
+};

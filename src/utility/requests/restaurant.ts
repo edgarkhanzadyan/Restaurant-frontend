@@ -1,4 +1,4 @@
-import { Restaurant } from '../../types';
+import { FullRestaurant, Restaurant } from '../../types';
 import { FieldsAreEmpty } from '../firebaseUtility/helpers';
 import { backendUrl } from './constants';
 import { api } from './utility';
@@ -61,12 +61,12 @@ type GetRestaurantByIdRequestBody = {};
 export const getRestaurantById = ({
   restaurantId,
 }: GetRestaurantByIdRequestBody &
-  GetRestaurantByIdQueryParameters): Promise<unknown> => {
+  GetRestaurantByIdQueryParameters): Promise<FullRestaurant> => {
   if (!restaurantId) {
     FieldsAreEmpty();
     return Promise.reject();
   }
-  return api<GetRestaurantByIdRequestBody, unknown>(
+  return api<GetRestaurantByIdRequestBody, FullRestaurant>(
     `${backendUrl}/restaurant/${restaurantId}`,
     {
       method: 'GET',
