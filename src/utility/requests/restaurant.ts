@@ -104,10 +104,18 @@ export const getRestaurantById = ({
 type UpdateRestaurantQueryParameters = {
   restaurantId: string;
 };
-type UpdateRestaurantRequestBody = {};
+type UpdateRestaurantRequestBody = {
+  name: string;
+  description: string;
+  location: string;
+  imgB64: string;
+};
 
 export const updateRestaurant = ({
   restaurantId,
+  name,
+  description,
+  location,
 }: UpdateRestaurantRequestBody &
   UpdateRestaurantQueryParameters): Promise<unknown> => {
   if (!restaurantId) {
@@ -118,7 +126,11 @@ export const updateRestaurant = ({
     `${backendUrl}/restaurant/${restaurantId}`,
     {
       method: 'PUT',
-      body: {},
+      body: {
+        name: name,
+        description: description,
+        location: location,
+      },
     }
   );
 };

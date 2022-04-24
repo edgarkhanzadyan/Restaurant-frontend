@@ -2,21 +2,20 @@ import React from 'react';
 import styled from 'styled-components/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { deleteUserAlert } from '../utility/userInteractionUtility';
+import type { User } from '../types';
 
-const RestaurantCardComponent = ({ item, navigation }) => (
+const UserCardComponent = ({ item, navigation, onDelete }: { item: User }) => (
   <UserWrapper
     onPress={() =>
       navigation.navigate('UserScreen', {
-        userUid: item.id,
+        userUid: item._id,
       })
     }
   >
     <UserHeader>
       <UserTitle>{item.name}</UserTitle>
       <DeleteButton
-        onPress={() =>
-          deleteUserAlert({ userName: item.name, userId: item.id })
-        }
+        onPress={() => deleteUserAlert({ userName: item.name, onDelete })}
       >
         <FontAwesome name="remove" size={28} color="red" />
       </DeleteButton>
@@ -24,7 +23,7 @@ const RestaurantCardComponent = ({ item, navigation }) => (
   </UserWrapper>
 );
 
-export default React.memo(RestaurantCardComponent);
+export default React.memo(UserCardComponent);
 
 const UserWrapper = styled.TouchableOpacity`
   width: 100%;

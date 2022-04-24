@@ -15,8 +15,9 @@ import {
 } from '../../utility/userInteractionUtility';
 
 import type { StackScreenProps } from '@react-navigation/stack';
+import { HeaderBackButton } from '@react-navigation/elements';
 import type { RootStackParamList } from '../../navigation/types';
-import { getRestaurantById } from '../../utility/requests';
+import { getRestaurantById, updateRestaurant } from '../../utility/requests';
 import { FullRestaurant } from '../../types';
 
 const RestaurantScreen = ({
@@ -37,14 +38,14 @@ const RestaurantScreen = ({
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantDescription, setRestaurantDescription] = useState('');
   const [restaurantLocation, setRestaurantLocation] = useState('');
-  const [imgUrl, setImgUrl] = useState('');
+  const [imgB64, setImgB64] = useState('');
 
   const resetRestaurantInfo = () => {
     if (restaurantInfo) {
       setRestaurantName(restaurantInfo.name);
       setRestaurantDescription(restaurantInfo.description);
       setRestaurantLocation(restaurantInfo.location);
-      setImgUrl(restaurantInfo.image);
+      setImgB64(restaurantInfo.image);
     }
   };
 
@@ -59,37 +60,49 @@ const RestaurantScreen = ({
 
   useEffect(() => {
     const headerRight = () => {
-      // if (userData.role !== USER_ROLE.REGULAR) {
-      //   if (isEditing) {
-      //     return (
-      //       <Button
-      //         onPress={() => {
-      //           editInfoActionSheet({
-      //             onEdit: () =>
-      //               updateRestaurantData({
-      //                 restaurantName: restaurantName.trim(),
-      //                 restaurantDescription: restaurantDescription.trim(),
-      //                 restaurantLocation: restaurantLocation.trim(),
-      //                 imgUrl,
-      //                 restaurantId,
-      //               }).then(() => {
-      //                 setIsEditing(false);
-      //               }),
-      //             onCancel: () => {
-      //               setIsEditing(false);
-      //               resetRestrauntInfo();
-      //             },
-      //           });
-      //         }}
-      //         title="Done"
-      //       />
-      //     );
-      //   }
-      //   return <Button onPress={() => setIsEditing(true)} title="Edit" />;
-      // }
+      if (userData.role !== USER_ROLE.REGULAR) {
+        if (isEditing) {
+          return (
+            <Button
+              onPress={() => {
+                editInfoActionSheet({
+                  onEdit: () => {
+                    updateRestaurant({
+                      restaurantId,
+                      name: restaurantName.trim(),
+                      description: restaurantDescription.trim(),
+                      location: restaurantLocation.trim(),
+                      imgB64,
+                    }).then(() => {
+                      setIsEditing(false);
+                    });
+                  },
+                  onCancel: () => {
+                    setIsEditing(false);
+                    resetRestaurantInfo();
+                  },
+                });
+              }}
+              title="Done"
+            />
+          );
+        }
+        return <Button onPress={() => setIsEditing(true)} title="Edit" />;
+      }
       return <View />;
     };
-    navigation.setOptions({ headerRight });
+    const headerLeft = () => (
+      <HeaderBackButton
+        onPress={() => {
+          navigation.goBack();
+        }}
+      />
+    );
+    navigation.setOptions({
+      headerRight,
+      headerLeft,
+    });
+    // navigation.setOptions({ back });
   });
 
   if (!restaurantInfo) return <ActivityIndicator />;
@@ -207,7 +220,7 @@ const RestaurantScreen = ({
                 </RestaurantDetail>
               </RestaurantDetailWrapper>
             )}
-            <UploadImageComponent setImgUrl={setImgUrl} imgUrl={imgUrl} />
+            <UploadImageComponent setImgB64={setImgB64} imgB64={imgB64} />
           </>
         ) : (
           <>
@@ -230,7 +243,7 @@ const RestaurantScreen = ({
             )}
             <RestaurantImage
               source={{
-                uri: `data:image/png;base64,${imgUrl}`,
+                uri: `data:image/png;base64,${imgB64}`,
               }}
             />
           </>

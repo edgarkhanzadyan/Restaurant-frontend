@@ -8,7 +8,7 @@ import RestaurantImage from './RestaurantImage';
 
 const windowWidth = Dimensions.get('window').width;
 
-const UploadImageComponent = ({ imgUrl }) => {
+const UploadImageComponent = ({ setImgB64, imgB64 }) => {
   const [imgLoading, setImgLoading] = useState(false);
   const pickImage = async () => {
     setImgLoading(true);
@@ -18,27 +18,24 @@ const UploadImageComponent = ({ imgUrl }) => {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0,
+        base64: true,
       });
 
       if (!result.cancelled) {
-        // uploadImage(result.uri).then((url) => {
-        //   setImgUrl(url);
-        //   setImgLoading(false);
-        // });
-      } else {
-        setImgLoading(false);
+        setImgB64(result.base64);
       }
+      setImgLoading(false);
     } catch (e) {
       console.warn(e);
     }
   };
   const imageComponent = () => {
     if (imgLoading) return <ActivityIndicator />;
-    if (imgUrl)
+    if (imgB64)
       return (
         <RestaurantImage
           source={{
-            uri: imgUrl,
+            uri: `data:image/png;base64,${imgB64}`,
           }}
         />
       );

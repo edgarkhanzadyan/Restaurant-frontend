@@ -3,9 +3,12 @@ import { FlatList, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
 import * as SecureStore from 'expo-secure-store';
 import { FontAwesome } from '@expo/vector-icons';
+import type { User } from '../../types';
 
-import { getUsers } from '../utility/firebaseUtility';
-import UserCardComponent from '../components/UserCardComponent';
+// import { getUsers } from '../../utility/firebaseUtility';
+import UserCardComponent from '../../components/UserCardComponent';
+import { deleteUser, getAllUsers } from '../../utility/requests';
+import { getUser } from '../../utility/secureStore';
 
 const ListHeader = ({ navigation }) => (
   <UserAddButton
@@ -20,35 +23,54 @@ const ListHeader = ({ navigation }) => (
 
 const UserFeed = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const refresh = () => {
+    getAllUsers().then((allUsers) => {
+      console.log(allUsers);
+      setUsers(allUsers);
+      setIsLoading(false);
+    });
+  };
+
   useEffect(() => {
-    SecureStore.getItemAsync('user')
-      .then((user) => setUserData(JSON.parse(user)))
-      .catch((err) => console.warn(err));
+    getUser().then((user) => {
+      if (user) {
+        setUserData(user);
+      }
+    });
   }, []);
   useEffect(() => {
     setIsLoading(true);
-    if (userData)
-      return getUsers({
-        setUsers,
-        setIsLoading,
-        selfUserUid: userData.userUid,
-      });
-    return () => {};
+    if (userData) refresh();
+    // return getAllUsers({
+    //   setUsers,
+    //   setIsLoading,
+    //   selfUserUid: userData.userUid,
+    // });
   }, [userData]);
-  const renderItem = ({ item }) => (
-    <UserCardComponent item={item} navigation={navigation} />
+  const renderItem = ({ item }: { item: User }) => (
+    <UserCardComponent
+      item={item}
+      navigation={navigation}
+      onDelete={() =>
+        deleteUser({ userId: item._id })
+          .then(() => {
+            refresh();
+          })
+          .catch((e) => console.error(e))
+      }
+    />
   );
   return (
     <UserFeedContainer>
       {userData && !isLoading ? (
-        <FlatList
+        <FlatList<User>
           ListHeaderComponent={<ListHeader navigation={navigation} />}
           data={users}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item._id}
         />
       ) : (
         <ActivityIndicator />

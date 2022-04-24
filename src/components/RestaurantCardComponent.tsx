@@ -19,14 +19,7 @@ const RestaurantCardComponent = ({
   userData,
   onDelete,
 }: Props) => (
-  <RestaurantWrapper
-    onPress={() =>
-      navigate('RestaurantScreen', {
-        restaurantId: restaurant._id,
-        userData,
-      })
-    }
-  >
+  <RestaurantWrapper onPress={navigate}>
     <RestaurantHeader>
       <RestaurantTitle>{restaurant.name}</RestaurantTitle>
       {(userData.role === USER_ROLE.ADMIN ||

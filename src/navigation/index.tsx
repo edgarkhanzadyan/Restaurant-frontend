@@ -101,7 +101,7 @@ function RootNavigator() {
       <Stack.Screen
         name="AdminScreen"
         component={AdminTabNavigator}
-        options={{ title: 'Admin Screen' }}
+        options={{ title: 'Admin Screen', headerShown: false }}
       />
       <Stack.Screen
         name="RestaurantOwnerScreen"

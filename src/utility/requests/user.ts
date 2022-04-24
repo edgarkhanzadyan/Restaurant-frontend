@@ -89,3 +89,9 @@ export const getUser = ({
     { method: 'GET' }
   );
 };
+
+type GetAllUsersResponseBody = User[];
+export const getAllUsers = (): Promise<GetAllUsersResponseBody> =>
+  api<LoginRequestBody, GetAllUsersResponseBody>(`${backendUrl}/user/`, {
+    method: 'GET',
+  });

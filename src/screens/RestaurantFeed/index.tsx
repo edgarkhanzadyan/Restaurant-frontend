@@ -96,7 +96,12 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
   const renderItem = ({ item }: { item: Restaurant }) => (
     <RestaurantCardComponent
       restaurant={item}
-      navigate={navigation.navigate}
+      navigate={() =>
+        navigation.navigate('RestaurantScreen', {
+          restaurantId: item._id,
+          userData,
+        })
+      }
       userData={userData}
       onDelete={() => {
         deleteRestaurant({ restaurantId: item._id }).then(() => {
@@ -105,6 +110,7 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
       }}
     />
   );
+
   return (
     <RestaurantFeedContainer>
       {userData && !isLoading ? (

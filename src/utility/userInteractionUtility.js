@@ -227,19 +227,14 @@ export const deleteRestaurantAlert = ({ restaurantName, onDelete }) =>
     ]
   );
 
-export const deleteUserAlert = ({ userName, userId }) =>
+export const deleteUserAlert = ({ userName, onDelete }) =>
   Alert.alert(
     'Delete user',
     `Are you sure you want to delete ${userName} user?`,
     [
       {
         text: 'Delete user',
-        onPress: () =>
-          deleteUserBackend({ userUid: userId })
-            .then(
-              (res) => res.success && deleteUserFirebase({ userUid: userId })
-            )
-            .catch((e) => console.warn(e)),
+        onPress: onDelete,
         style: 'destructive',
       },
       {
