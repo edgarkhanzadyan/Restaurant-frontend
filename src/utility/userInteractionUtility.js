@@ -3,10 +3,8 @@ import { USER_ROLE } from '../constants';
 import {
   deleteReview,
   deleteReviewReply,
-  deleteRestaurant,
   deleteUserFirebase,
 } from './firebaseUtility';
-
 import { deleteUserBackend } from './backendUtility';
 
 const reviewActionSheet = ({
@@ -211,14 +209,14 @@ export const handleAlerts = (error) => {
   console.error(error.code);
 };
 
-export const deleteRestaurantAlert = ({ restaurantName, restaurantId }) =>
+export const deleteRestaurantAlert = ({ restaurantName, onDelete }) =>
   Alert.alert(
     'Delete restaurant',
     `Are you sure you want to delete ${restaurantName} restaurant?`,
     [
       {
         text: 'Delete Restaurant',
-        onPress: () => deleteRestaurant({ restaurantId }),
+        onPress: onDelete,
         style: 'destructive',
       },
       {

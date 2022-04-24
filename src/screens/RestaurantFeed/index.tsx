@@ -7,16 +7,16 @@ import { StackScreenProps } from '@react-navigation/stack';
 
 import RestaurantCardComponent from '../../components/RestaurantCardComponent';
 
-// import {
-//   getRestaurantData,
-//   getRestaurantDataFilteredByOwner,
-// } from '../../utility/firebaseUtility';
 import SettingsModal from '../../modals/SettingsModal';
 import { USER_ROLE } from '../../constants';
 import { RootStackParamList } from '../../navigation/types';
 import { Restaurant, User, UserRole } from '../../types';
 import { getUser } from '../../utility/secureStore';
-import { getRestaurants } from '../../utility/requests';
+import {
+  deleteRestaurant,
+  getRestaurants,
+  getRestaurantsByOwner,
+} from '../../utility/requests';
 
 export type RestaurantFeedNavigate = StackScreenProps<
   RootStackParamList,
@@ -48,6 +48,36 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
   const [restaurantData, setRestaurantData] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const refresh = () => {
+    setIsLoading(true);
+    if (userData) {
+      switch (userData.role) {
+        case USER_ROLE.RESTAURANT_OWNER:
+          getRestaurantsByOwner({
+            limit: 5,
+            skip: 0,
+            ownerUserId: userData._id,
+          }).then((restaurants) => {
+            setRestaurantData(restaurants);
+            setIsLoading(false);
+          });
+          break;
+        case USER_ROLE.ADMIN:
+        case USER_ROLE.REGULAR:
+          getRestaurants({ limit: 5, skip: 0 })
+            .then((restaurants) => {
+              setRestaurantData(restaurants);
+              setIsLoading(false);
+            })
+            .catch((e) => console.log(e));
+          break;
+        // return getRestaurantData({ setRestaurantData, setIsLoading });
+        default:
+          console.warn('Role does not exist');
+      }
+    }
+  };
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -61,37 +91,18 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
       .catch((err) => console.error(err));
   }, []);
   useEffect(() => {
-    setIsLoading(true);
-    if (userData) {
-      switch (userData.role) {
-        case USER_ROLE.RESTAURANT_OWNER:
-          return;
-        // return getRestaurantDataFilteredByOwner({
-        //   setRestaurantData,
-        //   setIsLoading,
-        //   userUid: userData.userUid,
-        // });
-        case USER_ROLE.ADMIN:
-        case USER_ROLE.REGULAR:
-          getRestaurants({ limit: 5 })
-            .then((restaurants) => {
-              setRestaurantData(restaurants);
-              setIsLoading(false);
-            })
-            .catch((e) => console.log(e));
-          break;
-        // return getRestaurantData({ setRestaurantData, setIsLoading });
-        default:
-          console.warn('Role does not exist');
-      }
-    }
-    return () => {};
+    refresh();
   }, [userData]);
   const renderItem = ({ item }: { item: Restaurant }) => (
     <RestaurantCardComponent
       restaurant={item}
       navigate={navigation.navigate}
       userData={userData}
+      onDelete={() => {
+        deleteRestaurant({ restaurantId: item._id }).then(() => {
+          refresh();
+        });
+      }}
     />
   );
   return (
@@ -116,7 +127,7 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
       <SettingsModal
         setModalIsOpen={setModalIsOpen}
         modalIsOpen={modalIsOpen}
-        userUid={userData && userData.email}
+        userUid={userData && userData._id}
       />
     </RestaurantFeedContainer>
   );

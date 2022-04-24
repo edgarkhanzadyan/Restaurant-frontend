@@ -230,7 +230,7 @@ const RestaurantScreen = ({
             )}
             <RestaurantImage
               source={{
-                uri: imgUrl,
+                uri: `data:image/png;base64,${imgUrl}`,
               }}
             />
           </>

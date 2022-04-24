@@ -27,16 +27,10 @@ const LoginPage = ({
   const signIn = () => {
     setIsLoading(true);
     login({ email, password })
-      .then((response) => {
+      .then((user) => {
         setEmail('');
         setPassword('');
-        console.log(response);
-        return setUser({
-          name: 'asd',
-          role: 'regular',
-          email,
-          token: response.token,
-        });
+        return setUser(user);
       })
       .then(() => {
         navigation.reset({

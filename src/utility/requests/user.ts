@@ -1,15 +1,13 @@
 import { FieldsAreEmpty } from '../firebaseUtility/helpers';
 import { backendUrl } from './constants';
-import { UserRole } from '../../types';
+import { UserRole, User, UserWithToken } from '../../types';
 import { api } from './utility';
 
 type LoginRequestBody = {
   email: string;
   password: string;
 };
-type LoginResponseBody = {
-  token: string;
-};
+type LoginResponseBody = UserWithToken;
 export const login = ({
   email,
   password,
@@ -33,9 +31,7 @@ type SignupRequestBody = {
   name: string;
   role: UserRole;
 };
-type SignupResponseBody = {
-  token: string;
-};
+type SignupResponseBody = UserWithToken;
 export const signUp = ({
   email,
   password,
@@ -75,4 +71,21 @@ export const deleteUser = ({
     method: 'DELETE',
     body: {},
   });
+};
+
+type GetUserQueryParameters = {
+  userId: string;
+};
+type GetUserResponseBody = User;
+export const getUser = ({
+  userId,
+}: GetUserQueryParameters): Promise<GetUserResponseBody> => {
+  if (!userId) {
+    FieldsAreEmpty();
+    return Promise.reject();
+  }
+  return api<LoginRequestBody, GetUserResponseBody>(
+    `${backendUrl}/user/${userId}`,
+    { method: 'GET' }
+  );
 };

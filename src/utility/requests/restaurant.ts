@@ -33,11 +33,13 @@ export const createRestaurant = ({
 
 type GetRestaurantsQueryParameters = {
   limit: number;
+  skip: number;
 };
 type GetRestaurantsRequestBody = {};
 
 export const getRestaurants = ({
   limit,
+  skip,
 }: GetRestaurantsRequestBody & GetRestaurantsQueryParameters): Promise<
   Restaurant[]
 > => {
@@ -46,7 +48,32 @@ export const getRestaurants = ({
     return Promise.reject();
   }
   return api<GetRestaurantsRequestBody, Restaurant[]>(
-    `${backendUrl}/restaurant?limit=${limit}`,
+    `${backendUrl}/restaurant?limit=${limit}&skip=${skip}`,
+    {
+      method: 'GET',
+    }
+  );
+};
+
+type GetRestaurantsByOwnerQueryParameters = {
+  limit: number;
+  skip: number;
+  ownerUserId: string;
+};
+type GetRestaurantsByOwnerRequestBody = {};
+
+export const getRestaurantsByOwner = ({
+  limit,
+  skip,
+  ownerUserId,
+}: GetRestaurantsByOwnerRequestBody &
+  GetRestaurantsByOwnerQueryParameters): Promise<Restaurant[]> => {
+  if (!limit) {
+    FieldsAreEmpty();
+    return Promise.reject();
+  }
+  return api<GetRestaurantsRequestBody, Restaurant[]>(
+    `${backendUrl}/restaurant?limit=${limit}&skip=${skip}&ownerUserId=${ownerUserId}`,
     {
       method: 'GET',
     }

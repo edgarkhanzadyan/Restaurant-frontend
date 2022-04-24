@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Button, FlatList, ActivityIndicator } from 'react-native';
-import styled, { css } from 'styled-components';
+import styled, { css } from 'styled-components/native';
 import * as SecureStore from 'expo-secure-store';
-
+import type { Restaurant } from '../../types';
 import {
   updateUserData,
-  getUser,
   getRestaurantDataFilteredByOwner,
-} from '../utility/firebaseUtility';
+} from '../../utility/firebaseUtility';
 import {
   getUserBackend,
   updateUserEmailBackend,
-} from '../utility/backendUtility';
+} from '../../utility/backendUtility';
 import {
   editInfoActionSheet,
   adminChangeOwnRole,
   adminChangeOtherRole,
-} from '../utility/userInteractionUtility';
-import UpdatePasswordModal from '../modals/UpdatePasswordModal';
-import RestaurantCardComponent from '../components/RestaurantCardComponent';
-import RoleSelector from '../components/RoleSelector';
-import { USER_ROLE } from '../constants';
+} from '../../utility/userInteractionUtility';
+import UpdatePasswordModal from '../../modals/UpdatePasswordModal';
+import RestaurantCardComponent from '../../components/RestaurantCardComponent';
+import RoleSelector from '../../components/RoleSelector';
+import { USER_ROLE } from '../../constants';
+import { getRestaurantsByOwner, getUser } from '../../utility/requests';
 
 const UserScreen = ({
   navigation,
@@ -40,33 +40,65 @@ const UserScreen = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const [restaurantData, setRestaurantData] = useState([]);
+
   useEffect(
-    () =>
-      getRestaurantDataFilteredByOwner({
-        setRestaurantData,
-        setIsLoading,
-        userUid,
-      }),
+    () => {
+      const fetchRestaurants = async () => {
+        const response = await getRestaurantsByOwner({
+          limit: 5,
+          skip: 0,
+          ownerUserId: userUid,
+        });
+        setRestaurantData(response);
+      };
+      fetchRestaurants();
+    },
+    // getRestaurantDataFilteredByOwner({
+    //   setRestaurantData,
+    //   setIsLoading,
+    //   userUid,
+    // }),
     []
   );
-  useEffect(() => {
-    getUserBackend({ userUid }).then((res) => {
-      if (res.success) {
-        setUserEmail(res.email);
-        setUserEmailEditable(res.email);
-      }
-    });
-  }, []);
-  useEffect(() => getUser({ userUid, setUserInfo }), []);
-  useEffect(() => {
-    setUserName(userInfo.name);
-    setUserRole(userInfo.role);
-  }, [userInfo]);
-  useEffect(() => {
-    SecureStore.getItemAsync('user')
-      .then((user) => setThisUserInfo(JSON.parse(user)))
-      .catch((err) => console.warn(err));
-  }, []);
+  useEffect(
+    () => {
+      const fetchUser = async () => {
+        const response = await getUser({
+          userId: userUid,
+        });
+        console.log('res', response);
+        setUserEmail(response.email);
+        setUserEmailEditable(response.email);
+        setUserName(response.name);
+        setUserRole(response.role);
+      };
+      fetchUser();
+    },
+    // getRestaurantDataFilteredByOwner({
+    //   setRestaurantData,
+    //   setIsLoading,
+    //   userUid,
+    // }),
+    []
+  );
+  // useEffect(() => {
+  //   getUserBackend({ userUid }).then((res) => {
+  //     if (res.success) {
+  //       setUserEmail(res.email);
+  //       setUserEmailEditable(res.email);
+  //     }
+  //   });
+  // }, []);
+  // useEffect(() => getUser({ userUid, setUserInfo }), []);
+  // useEffect(() => {
+  //   setUserName(userInfo.name);
+  //   setUserRole(userInfo.role);
+  // }, [userInfo]);
+  // useEffect(() => {
+  //   SecureStore.getItemAsync('user')
+  //     .then((user) => setThisUserInfo(JSON.parse(user)))
+  //     .catch((err) => console.warn(err));
+  // }, []);
   const resetUser = () => {
     setIsEditing(false);
     setUserName(userInfo.name);
@@ -149,20 +181,21 @@ const UserScreen = ({
         ),
     });
   });
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: Restaurant }) => (
     <RestaurantCardComponent
       item={item}
       navigation={navigation}
       userData={userInfo}
     />
   );
+  console.log('username', userName);
   return (
     <UserScreenContainer>
       <SafeAreaContainer>
         {isLoading ? (
           <ActivityIndicator />
         ) : (
-          <FlatList
+          <FlatList<Restaurant>
             ListHeaderComponent={
               <>
                 {isEditing ? (

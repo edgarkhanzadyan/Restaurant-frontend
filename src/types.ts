@@ -1,10 +1,14 @@
 export type UserRole = 'regular' | 'owner' | 'admin';
 
 export type User = {
+  _id: string;
   name: string;
   role: UserRole;
-  token: string;
   email: string;
+};
+
+export type UserWithToken = User & {
+  token: string;
 };
 
 export type Restaurant = {

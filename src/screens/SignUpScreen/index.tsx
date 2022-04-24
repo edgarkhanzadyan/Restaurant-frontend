@@ -64,17 +64,12 @@ const SignUpScreen = ({
         name,
         role: userRole,
       })
-        .then((response) => {
+        .then((user) => {
           setName('');
           setEmail('');
           setPassword('');
           setConfirmPassword('');
-          return setUser({
-            name,
-            role: userRole,
-            token: response.token,
-            email,
-          });
+          return setUser(user);
         })
         .then(() => {
           navigation.reset({

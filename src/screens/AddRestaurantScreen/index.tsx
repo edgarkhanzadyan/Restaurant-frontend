@@ -3,10 +3,11 @@ import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Dimensions } from 'react-native';
 
-import { createRestaurant } from '../utility/firebaseUtility';
-import { resetToMainScreen } from '../utility/userInteractionUtility';
-import SubmitButton from '../components/SubmitButton';
-import RestaurantImage from '../components/RestaurantImage';
+// import { createRestaurant } from '../../utility/firebaseUtility';
+import { resetToMainScreen } from '../../utility/userInteractionUtility';
+import SubmitButton from '../../components/SubmitButton';
+import RestaurantImage from '../../components/RestaurantImage';
+import { createRestaurant } from '../../utility/requests';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -19,7 +20,7 @@ const AddRestaurantScreen = ({
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantDescription, setRestaurantDescription] = useState('');
   const [address, setAddress] = useState('');
-  const [imgUrl] = useState(null);
+  const [imgB64, setImgB64] = useState('');
   const [imgLoading, setImgLoading] = useState(false);
 
   const pickImage = async () => {
@@ -30,27 +31,24 @@ const AddRestaurantScreen = ({
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0,
+        base64: true,
       });
 
       if (!result.cancelled) {
-        // uploadImage(result.uri).then((url) => {
-        //   setImgUrl(url);
-        //   setImgLoading(false);
-        // });
-      } else {
-        setImgLoading(false);
+        setImgB64(result.base64);
       }
+      setImgLoading(false);
     } catch (e) {
       console.warn(e);
     }
   };
   const imageComponent = () => {
     if (imgLoading) return <ActivityIndicator />;
-    if (imgUrl)
+    if (imgB64)
       return (
         <RestaurantImage
           source={{
-            uri: imgUrl,
+            uri: `data:image/png;base64,${imgB64}`,
           }}
         />
       );
@@ -85,10 +83,10 @@ const AddRestaurantScreen = ({
           disabled={imgLoading}
           onPress={() => {
             createRestaurant({
-              restaurantName: restaurantName.trim(),
-              restaurantDescription: restaurantDescription.trim(),
-              address: address.trim(),
-              imgUrl,
+              name: restaurantName.trim(),
+              description: restaurantDescription.trim(),
+              location: address.trim(),
+              image: imgB64,
             })
               .then(() => {
                 navigation.reset({

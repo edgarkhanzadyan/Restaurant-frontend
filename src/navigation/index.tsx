@@ -106,7 +106,7 @@ function RootNavigator() {
       <Stack.Screen
         name="RestaurantOwnerScreen"
         component={RestaurantOwnerTabNavigator}
-        options={{ title: 'Restaurant Owner Screen' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="SignUpScreen"

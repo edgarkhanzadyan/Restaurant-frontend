@@ -13,7 +13,12 @@ type Props = {
   userData: User;
 };
 
-const RestaurantCardComponent = ({ restaurant, navigate, userData }: Props) => (
+const RestaurantCardComponent = ({
+  restaurant,
+  navigate,
+  userData,
+  onDelete,
+}: Props) => (
   <RestaurantWrapper
     onPress={() =>
       navigate('RestaurantScreen', {
@@ -30,7 +35,7 @@ const RestaurantCardComponent = ({ restaurant, navigate, userData }: Props) => (
           onPress={() =>
             deleteRestaurantAlert({
               restaurantName: restaurant.name,
-              restaurantId: restaurant._id,
+              onDelete,
             })
           }
         >
@@ -50,7 +55,7 @@ const RestaurantCardComponent = ({ restaurant, navigate, userData }: Props) => (
     </RestaurantDescription>
     <RestaurantImage
       source={{
-        uri: restaurant.image,
+        uri: `data:image/png;base64,${restaurant.image}`,
       }}
     />
   </RestaurantWrapper>
