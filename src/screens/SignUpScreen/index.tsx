@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Alert } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
 import { StackScreenProps } from '@react-navigation/stack';
 
 import {
@@ -10,7 +9,7 @@ import {
 
 import SubmitButton from '../../components/SubmitButton';
 import RoleSelector from '../../components/RoleSelector';
-import { signUp } from '../../utility/requests';
+import { createUser, signUp } from '../../utility/requests';
 import { RootStackParamList } from '../../navigation/types';
 import { UserRole } from '../../types';
 import {
@@ -36,24 +35,29 @@ const SignUpScreen = ({
   const [userRole, setUserRole] = useState<UserRole>('regular');
   const [confirmPassword, setConfirmPassword] = useState('');
   const createAnotherUser = () => {
-    // if (password === confirmPassword) {
-    //   createUserFirebase({
-    //     name: name.trim(),
-    //     email: email.trim(),
-    //     password,
-    //     userRole,
-    //   })
-    //     .then(() => {
-    //       setName('');
-    //       setEmail('');
-    //       setPassword('');
-    //       setConfirmPassword('');
-    //       Alert.alert('User created');
-    //     })
-    //     .catch((error) => {
-    //       console.warn(error);
-    //     });
-    // }
+    if (password === confirmPassword) {
+      setIsLoading(true);
+      createUser({
+        email,
+        password,
+        name,
+        role: userRole,
+      })
+        .then(() => {
+          setName('');
+          setEmail('');
+          setPassword('');
+          setConfirmPassword('');
+          setIsLoading(false);
+          Alert.alert('User created');
+        })
+        .catch((e) => {
+          setIsLoading(false);
+          handleAlerts(e);
+        });
+    } else {
+      Alert.alert('Passwords do not match');
+    }
   };
   const signUpAction = () => {
     if (password === confirmPassword) {

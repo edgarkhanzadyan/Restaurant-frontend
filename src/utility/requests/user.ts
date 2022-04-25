@@ -56,6 +56,37 @@ export const signUp = ({
   );
 };
 
+type CreateUserRequestBody = {
+  email: string;
+  password: string;
+  name: string;
+  role: UserRole;
+};
+type CreateUserResponseBody = UserWithToken;
+export const createUser = ({
+  email,
+  password,
+  name,
+  role,
+}: CreateUserRequestBody): Promise<CreateUserResponseBody> => {
+  if (!email || !password || !name || !role) {
+    FieldsAreEmpty();
+    return Promise.reject();
+  }
+  return api<CreateUserRequestBody, CreateUserResponseBody>(
+    `${backendUrl}/user/`,
+    {
+      method: 'POST',
+      body: {
+        password,
+        email,
+        name,
+        role,
+      },
+    }
+  );
+};
+
 type DeleteUserQueryParameters = {
   userId: string;
 };
