@@ -4,14 +4,16 @@ import { FontAwesome } from '@expo/vector-icons';
 import { deleteUserAlert } from '../utility/userInteractionUtility';
 import type { User } from '../types';
 
-const UserCardComponent = ({ item, navigation, onDelete }: { item: User }) => (
-  <UserWrapper
-    onPress={() =>
-      navigation.navigate('UserScreen', {
-        userUid: item._id,
-      })
-    }
-  >
+const UserCardComponent = ({
+  item,
+  navigate,
+  onDelete,
+}: {
+  item: User;
+  navigate: () => unknown;
+  onDelete: () => unknown;
+}) => (
+  <UserWrapper onPress={navigate}>
     <UserHeader>
       <UserTitle>{item.name}</UserTitle>
       <DeleteButton

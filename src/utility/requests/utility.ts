@@ -20,22 +20,22 @@ export const api = <RequestBody, T>(
     ...options,
     body: options.body && JSON.stringify(options.body),
   };
-  console.log(stringifiedOptions);
   return getUser()
-    .then((user) =>
-      fetch(url, {
+    .then((user) => {
+      const headers = new Headers();
+      headers.set('Content-Type', 'application/json');
+      headers.set('authorization', user ? `Bearer ${user.token}` : '');
+      return fetch(url, {
         ...stringifiedOptions,
-        headers: {
-          'Content-type': 'application/json',
-          authorization: user ? `Bearer ${user.token}` : undefined,
-        },
-      })
-    )
+        headers,
+      });
+    })
     .then(logMiddleware)
     .then((response) => {
       if (!response.ok) {
         throw new Error(response.statusText);
       }
+      if (response.status === 204) return response as any;
       return response.json() as Promise<T>;
     });
 };

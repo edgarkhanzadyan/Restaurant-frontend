@@ -24,25 +24,22 @@ const LoginPage = ({
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const signIn = () => {
+  const signIn = async () => {
     setIsLoading(true);
-    login({ email, password })
-      .then((user) => {
-        setEmail('');
-        setPassword('');
-        return setUser(user);
-      })
-      .then(() => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: resetToMainScreen('REGULAR') }],
-        });
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        setIsLoading(false);
-        handleAlerts(e);
+    try {
+      const user = await login({ email, password });
+      setEmail('');
+      setPassword('');
+      await setUser(user);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: resetToMainScreen(user.role) }],
       });
+      setIsLoading(false);
+    } catch (e) {
+      setIsLoading(false);
+      handleAlerts(e);
+    }
   };
 
   return (

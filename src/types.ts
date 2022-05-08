@@ -33,7 +33,7 @@ export type Review = {
   _id: string;
   reviewer: string;
   restaurant: string;
-  comment: 'cool';
-  score: 3;
+  comment: string;
+  score: number;
   createdAt: string;
 };

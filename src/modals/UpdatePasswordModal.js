@@ -5,7 +5,7 @@ import styled from 'styled-components/native';
 
 import { updateUserPasswordBackend } from '../utility/backendUtility';
 
-const UpdatePasswordModal = ({ modalIsOpen, setModalIsOpen, userUid }) => {
+const UpdatePasswordModal = ({ modalIsOpen, setModalIsOpen, userId }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +38,7 @@ const UpdatePasswordModal = ({ modalIsOpen, setModalIsOpen, userUid }) => {
             if (password === confirmPassword) {
               setIsLoading(true);
               updateUserPasswordBackend({
-                userUid,
+                userId,
                 password,
               })
                 .then((res) => {

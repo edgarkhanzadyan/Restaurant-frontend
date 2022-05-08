@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'react-native';
+import { ActivityIndicator, Button } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { StackScreenProps } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
-import * as SecureStore from 'expo-secure-store';
 
 import RestaurantFeed from '../screens/RestaurantFeed';
 import UserFeed from '../screens/UserFeed';
 
 import SettingsModal from '../modals/SettingsModal';
+import { AdminTabScreenParamList, RootStackParamList } from './types';
+import { getUser } from '../utility/secureStore';
+import { User } from '../types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<AdminTabScreenParamList>();
 
-const AdminTabNavigator = ({ navigation }) => {
+const AdminTabNavigator = ({
+  navigation,
+}: StackScreenProps<RootStackParamList, 'AdminScreen'>) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [userData, setUserData] = useState(null);
+  const [userData, setUserData] = useState<User | null>(null);
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -22,30 +27,31 @@ const AdminTabNavigator = ({ navigation }) => {
     });
   }, [navigation]);
   useEffect(() => {
-    SecureStore.getItemAsync('user')
-      .then((user) => setUserData(JSON.parse(user)))
-      .catch((err) => console.warn(err));
+    getUser().then(setUserData);
   }, []);
+
+  if (!userData) {
+    return <ActivityIndicator />;
+  }
 
   return (
     <>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-
-            if (route.name === 'UserFeed') {
-              iconName = focused ? 'people-sharp' : 'people-outline';
-            } else if (route.name === 'RestaurantFeed') {
-              iconName = focused ? 'restaurant' : 'restaurant-outline';
-            }
-            return <Ionicons name={iconName} size={size} color={color} />;
+            const getIconName = () => {
+              switch (route.name) {
+                case 'RestaurantFeed':
+                  return focused ? 'restaurant' : 'restaurant-outline';
+                case 'UserFeed':
+                  return focused ? 'people-sharp' : 'people-outline';
+              }
+            };
+            return <Ionicons name={getIconName()} size={size} color={color} />;
           },
+          tabBarActiveTintColor: 'blue',
+          tabBarInactiveTintColor: 'gray',
         })}
-        tabBarOptions={{
-          activeTintColor: 'blue',
-          inactiveTintColor: 'gray',
-        }}
       >
         <Tab.Screen name="RestaurantFeed" component={RestaurantFeed} />
         <Tab.Screen name="UserFeed" component={UserFeed} />
@@ -53,7 +59,7 @@ const AdminTabNavigator = ({ navigation }) => {
       <SettingsModal
         setModalIsOpen={setModalIsOpen}
         modalIsOpen={modalIsOpen}
-        userUid={userData && userData.userUid}
+        userId={userData._id}
       />
     </>
   );

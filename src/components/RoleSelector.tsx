@@ -2,8 +2,19 @@ import React from 'react';
 import styled from 'styled-components/native';
 
 import { USER_ROLE, USER_MAP } from '../constants';
+import type { UserRole } from '../types';
 
-const RoleSelector = ({ userRole, setUserRole, disabled, isCreatorAdmin }) => {
+const RoleSelector = ({
+  userRole,
+  setUserRole,
+  disabled,
+  isCreatorAdmin,
+}: {
+  userRole: UserRole;
+  setUserRole: (role: UserRole) => unknown;
+  disabled: boolean;
+  isCreatorAdmin: boolean;
+}) => {
   if (disabled) {
     return (
       <RoleButton active disabled>
@@ -11,7 +22,7 @@ const RoleSelector = ({ userRole, setUserRole, disabled, isCreatorAdmin }) => {
       </RoleButton>
     );
   }
-  return Object.values(USER_ROLE)
+  const roleSelectorContent = Object.values(USER_ROLE)
     .filter((constRole) => isCreatorAdmin || constRole !== USER_ROLE.ADMIN)
     .map((constRole) => (
       <RoleButton
@@ -21,12 +32,15 @@ const RoleSelector = ({ userRole, setUserRole, disabled, isCreatorAdmin }) => {
         <RoleButtonText>{USER_MAP[constRole]}</RoleButtonText>
       </RoleButton>
     ));
+
+  return <>{roleSelectorContent}</>;
 };
 
 const RoleButton = styled.TouchableOpacity`
   justify-content: center;
   align-items: center;
-  background-color: ${(props) => (props.active ? '#009ed3' : '#70dbff')};
+  background-color: ${({ active }: { active: boolean }) =>
+    active ? '#009ed3' : '#70dbff'};
   padding: 10px;
   border-radius: 5px;
   margin: 3px;

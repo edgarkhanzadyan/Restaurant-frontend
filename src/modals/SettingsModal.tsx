@@ -3,11 +3,21 @@ import { Button, InteractionManager } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import styled from 'styled-components/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 import { signOut } from '../utility/firebaseUtility';
+import { RootStackParamList } from '../navigation/types';
 
-const SettingsModal = ({ setModalIsOpen, modalIsOpen, userUid }) => {
-  const navigation = useNavigation();
+const SettingsModal = ({
+  setModalIsOpen,
+  modalIsOpen,
+  userId,
+}: {
+  setModalIsOpen: (isOpen: boolean) => unknown;
+  modalIsOpen: boolean;
+  userId: string;
+}) => {
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   return (
     <Modal
       isVisible={modalIsOpen}
@@ -21,7 +31,7 @@ const SettingsModal = ({ setModalIsOpen, modalIsOpen, userUid }) => {
           onPress={() => {
             setModalIsOpen(false);
             InteractionManager.runAfterInteractions(() => {
-              navigation.navigate('UserScreen', { userUid });
+              navigation.navigate('UserScreen', { userId });
             });
           }}
           title="Profile"
@@ -35,7 +45,7 @@ const SettingsModal = ({ setModalIsOpen, modalIsOpen, userUid }) => {
               InteractionManager.runAfterInteractions(() => {
                 navigation.reset({
                   index: 0,
-                  routes: [{ name: 'LoginScreen', immediate: true }],
+                  routes: [{ name: 'LoginScreen' }],
                 });
               });
             });

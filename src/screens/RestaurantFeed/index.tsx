@@ -93,13 +93,18 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
   useEffect(() => {
     refresh();
   }, [userData]);
+
+  if (!userData || isLoading) {
+    return <ActivityIndicator />;
+  }
+
   const renderItem = ({ item }: { item: Restaurant }) => (
     <RestaurantCardComponent
       restaurant={item}
       navigate={() =>
         navigation.navigate('RestaurantScreen', {
-          restaurantId: item._id,
           userData,
+          restaurantId: item._id,
         })
       }
       userData={userData}
@@ -113,27 +118,23 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
 
   return (
     <RestaurantFeedContainer>
-      {userData && !isLoading ? (
-        <FlatList<Restaurant>
-          ListHeaderComponent={
-            userData.role !== USER_ROLE.REGULAR ? (
-              <ListHeader navigate={navigation.navigate} role={userData.role} />
-            ) : (
-              <View />
-            )
-          }
-          data={restaurantData}
-          renderItem={renderItem}
-          keyExtractor={(item) => item._id}
-          initialNumToRender={3}
-        />
-      ) : (
-        <ActivityIndicator />
-      )}
+      <FlatList<Restaurant>
+        ListHeaderComponent={
+          userData.role !== USER_ROLE.REGULAR ? (
+            <ListHeader navigate={navigation.navigate} role={userData.role} />
+          ) : (
+            <View />
+          )
+        }
+        data={restaurantData}
+        renderItem={renderItem}
+        keyExtractor={(item) => item._id}
+        initialNumToRender={3}
+      />
       <SettingsModal
         setModalIsOpen={setModalIsOpen}
         modalIsOpen={modalIsOpen}
-        userUid={userData && userData._id}
+        userId={userData._id}
       />
     </RestaurantFeedContainer>
   );

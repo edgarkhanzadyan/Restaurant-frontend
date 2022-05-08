@@ -116,6 +116,7 @@ export const updateRestaurant = ({
   name,
   description,
   location,
+  imgB64,
 }: UpdateRestaurantRequestBody &
   UpdateRestaurantQueryParameters): Promise<unknown> => {
   if (!restaurantId) {
@@ -127,9 +128,10 @@ export const updateRestaurant = ({
     {
       method: 'PUT',
       body: {
-        name: name,
-        description: description,
-        location: location,
+        name,
+        description,
+        location,
+        imgB64,
       },
     }
   );

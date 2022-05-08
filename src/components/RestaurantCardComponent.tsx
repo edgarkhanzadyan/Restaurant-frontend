@@ -5,12 +5,12 @@ import RestaurantImage from './RestaurantImage';
 import { USER_ROLE } from '../constants';
 import { deleteRestaurantAlert } from '../utility/userInteractionUtility';
 import { Restaurant, User } from '../types';
-import { RestaurantFeedNavigate } from '../screens/RestaurantFeed';
 
 type Props = {
   restaurant: Restaurant;
-  navigate: RestaurantFeedNavigate;
+  navigate: () => unknown;
   userData: User;
+  onDelete: () => unknown;
 };
 
 const RestaurantCardComponent = ({

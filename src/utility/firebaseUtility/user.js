@@ -21,7 +21,7 @@ const signUserOutWithListeners = ({ setUserLoggedIn, setUserData }) => {
   setUserData(null);
   RootNavigation.reset({
     index: 0,
-    routes: [{ name: 'LoginScreen', immediate: true }],
+    routes: [{ name: 'LoginScreen' }],
   });
 };
 

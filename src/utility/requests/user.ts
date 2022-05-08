@@ -104,6 +104,28 @@ export const deleteUser = ({
   });
 };
 
+type UpdateUserQueryParameters = {
+  userId: string;
+};
+type UpdateUserRequestBody = {
+  name: string;
+  role: string;
+};
+export const updateUser = ({
+  userId,
+  name,
+  role,
+}: UpdateUserRequestBody & UpdateUserQueryParameters): Promise<unknown> => {
+  if (!userId) {
+    FieldsAreEmpty();
+    return Promise.reject();
+  }
+  return api<UpdateUserRequestBody, unknown>(`${backendUrl}/user/${userId}`, {
+    method: 'PUT',
+    body: { name, role },
+  });
+};
+
 type GetUserQueryParameters = {
   userId: string;
 };

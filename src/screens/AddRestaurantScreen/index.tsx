@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Dimensions } from 'react-native';
+import { StackScreenProps } from '@react-navigation/stack';
 
 // import { createRestaurant } from '../../utility/firebaseUtility';
 import { resetToMainScreen } from '../../utility/userInteractionUtility';
 import SubmitButton from '../../components/SubmitButton';
 import RestaurantImage from '../../components/RestaurantImage';
 import { createRestaurant } from '../../utility/requests';
+
+import { RootStackParamList } from '../../navigation/types';
 
 const windowWidth = Dimensions.get('window').width;
 
@@ -16,7 +19,7 @@ const AddRestaurantScreen = ({
   route: {
     params: { role },
   },
-}) => {
+}: StackScreenProps<RootStackParamList, 'AddRestaurantScreen'>) => {
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantDescription, setRestaurantDescription] = useState('');
   const [address, setAddress] = useState('');
@@ -34,7 +37,7 @@ const AddRestaurantScreen = ({
         base64: true,
       });
 
-      if (!result.cancelled) {
+      if (!result.cancelled && result.base64) {
         setImgB64(result.base64);
       }
       setImgLoading(false);
@@ -81,6 +84,7 @@ const AddRestaurantScreen = ({
         />
         <SubmitButton
           disabled={imgLoading}
+          isInverse={false}
           onPress={() => {
             createRestaurant({
               name: restaurantName.trim(),

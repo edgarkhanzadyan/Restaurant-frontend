@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ActivityIndicator, Button, View } from 'react-native';
 import styled, { css } from 'styled-components/native';
+import type { StackScreenProps } from '@react-navigation/stack';
+import { HeaderBackButton } from '@react-navigation/elements';
 
 import ReviewModal from '../../modals/ReviewModal';
 import UploadImageComponent from '../../components/UploadImageComponent';
@@ -13,9 +15,6 @@ import {
   replyActionSheetWrapper,
   editInfoActionSheet,
 } from '../../utility/userInteractionUtility';
-
-import type { StackScreenProps } from '@react-navigation/stack';
-import { HeaderBackButton } from '@react-navigation/elements';
 import type { RootStackParamList } from '../../navigation/types';
 import { getRestaurantById, updateRestaurant } from '../../utility/requests';
 import { FullRestaurant } from '../../types';
@@ -112,7 +111,7 @@ const RestaurantScreen = ({
     if (
       userData.role === USER_ROLE.REGULAR &&
       restaurantInfo.reviews &&
-      restaurantInfo.reviews.some((rev) => rev.creatorId === userData.userUid)
+      restaurantInfo.reviews.some((rev) => rev.reviewer === userData._id)
     )
       return false;
     return true;
@@ -143,12 +142,12 @@ const RestaurantScreen = ({
             userData,
             edit: () => {
               setCommentToReply(null);
-              setCommentToEdit(rev._id);
+              // setCommentToEdit(rev._id);
               setCommentToEditText(rev.comment);
             },
             reply: () => {
               setCommentToEdit(null);
-              setCommentToReply(rev._id);
+              // setCommentToReply(rev._id);
               setCommentToEditText('');
             },
           })
@@ -161,7 +160,7 @@ const RestaurantScreen = ({
               openReplyActionSheet={() =>
                 replyActionSheetWrapper({
                   restaurantId,
-                  reviewId: rev.id,
+                  reviewId: rev._id,
                   replierId: rev.reply.replierId,
                   userData,
                   edit: () => {
@@ -178,7 +177,7 @@ const RestaurantScreen = ({
               setCommentToEdit={setCommentToEdit}
               commentToEditText={commentToEditText}
               setCommentToEditText={setCommentToEditText}
-              reviewId={rev.id}
+              reviewId={rev._id}
               restaurantId={restaurantId}
             />
           )
@@ -319,7 +318,7 @@ const RestaurantDetail = styled.Text`
   ${RestaurantDetailGeneral}
 `;
 
-const RestaurantDetailEditable = styled.TextInput`
+const RestaurantDetailEditable = styled.TextInput<{ height: number }>`
   ${RestaurantDetailGeneral}
   border: 1px solid black;
   border-radius: 5px;

@@ -1,34 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
-import * as SecureStore from 'expo-secure-store';
 import { FontAwesome } from '@expo/vector-icons';
-import type { User } from '../../types';
+import { StackScreenProps } from '@react-navigation/stack';
 
+import type { User } from '../../types';
 // import { getUsers } from '../../utility/firebaseUtility';
 import UserCardComponent from '../../components/UserCardComponent';
 import { deleteUser, getAllUsers } from '../../utility/requests';
 import { getUser } from '../../utility/secureStore';
 
-const ListHeader = ({ navigation }) => (
-  <UserAddButton
-    onPress={() =>
-      navigation.navigate('SignUpScreen', { isCreatorAdmin: true })
-    }
-  >
+import { RootStackParamList } from '../../navigation/types';
+
+const ListHeader = ({ navigate }: { navigate: () => unknown }) => (
+  <UserAddButton onPress={navigate}>
     <UserAddButtonTitle>Add user</UserAddButtonTitle>
     <FontAwesome name="plus-circle" size={40} color="green" />
   </UserAddButton>
 );
 
-const UserFeed = ({ navigation }) => {
-  const [userData, setUserData] = useState(null);
+type UserFeedProps = StackScreenProps<RootStackParamList, 'UserFeed'>;
+
+const UserFeed = ({ navigation }: UserFeedProps) => {
+  const [userData, setUserData] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const refresh = () => {
     getAllUsers().then((allUsers) => {
-      console.log(allUsers);
       setUsers(allUsers);
       setIsLoading(false);
     });
@@ -53,7 +52,7 @@ const UserFeed = ({ navigation }) => {
   const renderItem = ({ item }: { item: User }) => (
     <UserCardComponent
       item={item}
-      navigation={navigation}
+      navigate={() => navigation.navigate('UserScreen', { userId: item._id })}
       onDelete={() =>
         deleteUser({ userId: item._id })
           .then(() => {
@@ -67,7 +66,15 @@ const UserFeed = ({ navigation }) => {
     <UserFeedContainer>
       {userData && !isLoading ? (
         <FlatList<User>
-          ListHeaderComponent={<ListHeader navigation={navigation} />}
+          ListHeaderComponent={
+            <ListHeader
+              navigate={() =>
+                navigation.navigate('SignUpScreen', {
+                  isCreatorAdmin: true,
+                })
+              }
+            />
+          }
           data={users}
           renderItem={renderItem}
           keyExtractor={(item) => item._id}

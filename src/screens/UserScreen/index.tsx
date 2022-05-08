@@ -1,132 +1,86 @@
 import React, { useState, useEffect } from 'react';
 import { Button, FlatList, ActivityIndicator } from 'react-native';
 import styled, { css } from 'styled-components/native';
-import * as SecureStore from 'expo-secure-store';
-import type { Restaurant } from '../../types';
-import {
-  updateUserData,
-  getRestaurantDataFilteredByOwner,
-} from '../../utility/firebaseUtility';
-import {
-  getUserBackend,
-  updateUserEmailBackend,
-} from '../../utility/backendUtility';
-import {
-  editInfoActionSheet,
-  adminChangeOwnRole,
-  adminChangeOtherRole,
-} from '../../utility/userInteractionUtility';
+import { StackScreenProps } from '@react-navigation/stack';
+import type { Restaurant, User } from '../../types';
+import { editInfoActionSheet } from '../../utility/userInteractionUtility';
 import UpdatePasswordModal from '../../modals/UpdatePasswordModal';
 import RestaurantCardComponent from '../../components/RestaurantCardComponent';
 import RoleSelector from '../../components/RoleSelector';
 import { USER_ROLE } from '../../constants';
-import { getRestaurantsByOwner, getUser } from '../../utility/requests';
+import {
+  deleteRestaurant,
+  getRestaurantsByOwner,
+  getUser,
+  updateUser,
+} from '../../utility/requests';
+import { getUser as getUserStore } from '../../utility/secureStore';
+import { RootStackParamList } from '../../navigation/types';
 
 const UserScreen = ({
   navigation,
   route: {
-    params: { userUid },
+    params: { userId },
   },
-}) => {
-  const [thisUserInfo, setThisUserInfo] = useState({});
-  const [userInfo, setUserInfo] = useState({});
+}: StackScreenProps<RootStackParamList, 'UserScreen'>) => {
+  console.log(userId);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [userInfoEdit, setUserInfoEdit] = useState<User | null>(null);
+  const [thisUserInfo, setThisUserInfo] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [userName, setUserName] = useState('');
-  const [userRole, setUserRole] = useState(USER_ROLE.REGULAR);
-  const [userEmail, setUserEmail] = useState('');
-  const [userEmailEditable, setUserEmailEditable] = useState(userEmail);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [restaurantData, setRestaurantData] = useState([]);
+  const [restaurantData, setRestaurantData] = useState<Restaurant[]>([]);
 
-  useEffect(
-    () => {
-      const fetchRestaurants = async () => {
-        const response = await getRestaurantsByOwner({
-          limit: 5,
-          skip: 0,
-          ownerUserId: userUid,
-        });
-        setRestaurantData(response);
-      };
-      fetchRestaurants();
-    },
-    // getRestaurantDataFilteredByOwner({
-    //   setRestaurantData,
-    //   setIsLoading,
-    //   userUid,
-    // }),
-    []
-  );
-  useEffect(
-    () => {
-      const fetchUser = async () => {
-        const response = await getUser({
-          userId: userUid,
-        });
-        console.log('res', response);
-        setUserEmail(response.email);
-        setUserEmailEditable(response.email);
-        setUserName(response.name);
-        setUserRole(response.role);
-      };
-      fetchUser();
-    },
-    // getRestaurantDataFilteredByOwner({
-    //   setRestaurantData,
-    //   setIsLoading,
-    //   userUid,
-    // }),
-    []
-  );
-  // useEffect(() => {
-  //   getUserBackend({ userUid }).then((res) => {
-  //     if (res.success) {
-  //       setUserEmail(res.email);
-  //       setUserEmailEditable(res.email);
-  //     }
-  //   });
-  // }, []);
-  // useEffect(() => getUser({ userUid, setUserInfo }), []);
-  // useEffect(() => {
-  //   setUserName(userInfo.name);
-  //   setUserRole(userInfo.role);
-  // }, [userInfo]);
-  // useEffect(() => {
-  //   SecureStore.getItemAsync('user')
-  //     .then((user) => setThisUserInfo(JSON.parse(user)))
-  //     .catch((err) => console.warn(err));
-  // }, []);
+  const fetchRestaurants = async () => {
+    const response = await getRestaurantsByOwner({
+      limit: 5,
+      skip: 0,
+      ownerUserId: userId,
+    });
+    setRestaurantData(response);
+  };
+
+  const fetchUser = async () => {
+    const response = await getUser({
+      userId,
+    });
+    setUserInfo(response);
+    setUserInfoEdit(response);
+  };
+
+  useEffect(() => {
+    setIsLoading(true);
+    Promise.all([getUserStore(), fetchRestaurants(), fetchUser()])
+      .then(([user]) => {
+        setThisUserInfo(user);
+        setIsLoading(false);
+      })
+      .catch((e) => console.error(e));
+  }, []);
+
   const resetUser = () => {
     setIsEditing(false);
-    setUserName(userInfo.name);
-    setUserRole(userInfo.role);
-    setUserEmailEditable(userEmail);
+    if (userInfo) {
+      setUserInfoEdit(userInfo);
+    }
   };
   const updateDone = () => {
-    if (userInfo.role !== userRole || userInfo.name !== userName) {
-      updateUserData({
-        userUid,
-        userName: userName.trim(),
-        userRole,
+    if (
+      userInfo &&
+      userInfoEdit &&
+      (userInfo.role !== userInfoEdit.role ||
+        userInfo.name !== userInfoEdit.name)
+    ) {
+      updateUser({
+        userId,
+        name: userInfoEdit.name,
+        role: userInfoEdit.role,
       }).then(() => {
         setIsEditing(false);
       });
-    }
-    if (userEmail !== userEmailEditable) {
-      updateUserEmailBackend({ userUid, email: userEmailEditable }).then(
-        (res) => {
-          setIsEditing(false);
-          if (res.success) {
-            setUserEmail(userEmailEditable);
-            setUserEmailEditable(userEmailEditable);
-          } else {
-            resetUser();
-          }
-        }
-      );
     }
   };
 
@@ -137,40 +91,15 @@ const UserScreen = ({
           <Button
             onPress={() => {
               if (
-                userInfo.role !== userRole ||
-                userInfo.name !== userName ||
-                userEmail !== userEmailEditable
+                userInfo &&
+                userInfoEdit &&
+                (userInfo.role !== userInfoEdit.role ||
+                  userInfo.name !== userInfoEdit.name)
               ) {
-                if (userInfo.role !== userRole) {
-                  if (
-                    userInfo.role === USER_ROLE.ADMIN &&
-                    userUid === thisUserInfo.userUid
-                  ) {
-                    editInfoActionSheet({
-                      onEdit: () =>
-                        adminChangeOwnRole({
-                          updateDone,
-                          updateCancel: resetUser,
-                        }),
-                      onCancel: resetUser,
-                    });
-                    return;
-                  }
-                  editInfoActionSheet({
-                    onEdit: () =>
-                      adminChangeOtherRole({
-                        updateDone,
-                        updateCancel: resetUser,
-                      }),
-                    onCancel: resetUser,
-                  });
-                  return;
-                }
                 editInfoActionSheet({
                   onEdit: updateDone,
                   onCancel: resetUser,
                 });
-                return;
               }
               resetUser();
             }}
@@ -181,14 +110,28 @@ const UserScreen = ({
         ),
     });
   });
+
+  if (isLoading || !userInfo || !userInfoEdit || !thisUserInfo) {
+    return <ActivityIndicator />;
+  }
   const renderItem = ({ item }: { item: Restaurant }) => (
     <RestaurantCardComponent
-      item={item}
-      navigation={navigation}
+      restaurant={item}
+      navigate={() =>
+        navigation.navigate('RestaurantScreen', {
+          userData: userInfo,
+          restaurantId: item._id,
+        })
+      }
       userData={userInfo}
+      onDelete={() => {
+        deleteRestaurant({ restaurantId: item._id }).then(() => {
+          fetchRestaurants();
+        });
+      }}
     />
   );
-  console.log('username', userName);
+  console.log('userInfo', userInfo);
   return (
     <UserScreenContainer>
       <SafeAreaContainer>
@@ -203,26 +146,32 @@ const UserScreen = ({
                     <NameWrapper>
                       <NameTitle>Name:</NameTitle>
                       <NameEditable
-                        value={userName}
-                        onChangeText={setUserName}
+                        value={userInfoEdit.name}
+                        onChangeText={(name) =>
+                          setUserInfoEdit({ ...userInfoEdit, name })
+                        }
                       />
                     </NameWrapper>
                     <EmailWrapper>
                       <EmailTitle>Email:</EmailTitle>
                       {thisUserInfo.role === USER_ROLE.ADMIN ? (
                         <EmailEditable
-                          value={userEmailEditable}
-                          onChangeText={setUserEmailEditable}
+                          value={userInfoEdit.email}
+                          onChangeText={(email) =>
+                            setUserInfoEdit({ ...userInfoEdit, email })
+                          }
                         />
                       ) : (
-                        <Email>{userEmail}</Email>
+                        <Email>{userInfo.email}</Email>
                       )}
                     </EmailWrapper>
                     <RoleWrapper>
                       <RoleTitle>Role:</RoleTitle>
                       <RoleSelector
-                        userRole={userRole}
-                        setUserRole={setUserRole}
+                        userRole={userInfoEdit.role}
+                        setUserRole={(role) => {
+                          setUserInfoEdit({ ...userInfoEdit, role });
+                        }}
                         disabled={thisUserInfo.role !== USER_ROLE.ADMIN}
                         isCreatorAdmin
                       />
@@ -238,17 +187,18 @@ const UserScreen = ({
                   <>
                     <NameWrapper>
                       <NameTitle>Name:</NameTitle>
-                      <Name>{userName}</Name>
+                      <Name>{userInfo.name}</Name>
                     </NameWrapper>
                     <EmailWrapper>
                       <EmailTitle>Email:</EmailTitle>
-                      <Email>{userEmail}</Email>
+                      <Email>{userInfo.email}</Email>
                     </EmailWrapper>
                     <RoleWrapper>
                       <RoleTitle>Role:</RoleTitle>
                       <RoleSelector
-                        userRole={userRole}
-                        setUserRole={setUserRole}
+                        userRole={userInfo.role}
+                        setUserRole={() => {}}
+                        isCreatorAdmin={false}
                         disabled
                       />
                     </RoleWrapper>
@@ -257,7 +207,7 @@ const UserScreen = ({
                 {restaurantData.length !== 0 && (
                   <UserRestaurantsTitle>
                     Restaurants created by{' '}
-                    {thisUserInfo.userUid === userUid ? 'you' : userName}:
+                    {thisUserInfo._id === userInfo._id ? 'you' : userInfo.name}:
                   </UserRestaurantsTitle>
                 )}
               </>
@@ -265,7 +215,7 @@ const UserScreen = ({
             refreshing={isLoading}
             data={restaurantData}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item._id}
             initialNumToRender={3}
           />
         )}
@@ -273,7 +223,7 @@ const UserScreen = ({
       <UpdatePasswordModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        userUid={userUid}
+        userId={userInfo._id}
       />
     </UserScreenContainer>
   );
