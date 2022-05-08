@@ -1,24 +1,51 @@
 import React from 'react';
 import { Button } from 'react-native';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components/native';
+import { ReviewReply, User } from '../types';
 
 import { editReviewReply } from '../utility/firebaseUtility';
+import { replyActionSheetWrapper } from '../utility/userInteractionUtility';
+
+type Props = {
+  userData: User;
+  replyData: ReviewReply;
+  setCommentToEdit: (commentToEdit: string | null) => unknown;
+  commentToEdit: string | null;
+  commentToEditText: string;
+  setCommentToEditText: (commentToEditText: string) => unknown;
+  setCommentToReply: (commentToReply: string | null) => unknown;
+  restaurantId: string;
+  reviewId: string;
+};
 
 const ReplyComponent = ({
-  openReplyActionSheet,
-  userName,
-  id,
-  comment,
+  replyData,
+  userData,
+  setCommentToReply,
   commentToEdit,
   setCommentToEdit,
   commentToEditText,
   setCommentToEditText,
   restaurantId,
   reviewId,
-}) => (
-  <ReplyWrapper onPress={openReplyActionSheet}>
-    <ReviewerName>{userName}</ReviewerName>
-    {commentToEdit === id ? (
+}: Props) => (
+  <ReplyWrapper
+    onPress={() =>
+      replyActionSheetWrapper({
+        restaurantId,
+        reviewId,
+        replierId: replyData.replier,
+        userData,
+        edit: () => {
+          setCommentToReply(null);
+          setCommentToEdit(replyData._id);
+          setCommentToEditText(replyData.comment);
+        },
+      })
+    }
+  >
+    <ReviewerName>{replyData.replier}</ReviewerName>
+    {commentToEdit === replyData._id ? (
       <ReviewerTextEditableWrapper>
         <ReviewerTextEditable
           value={commentToEditText}
@@ -49,7 +76,7 @@ const ReplyComponent = ({
         </ReviewerTextEditableFooter>
       </ReviewerTextEditableWrapper>
     ) : (
-      <ReviewerText>{comment}</ReviewerText>
+      <ReviewerText>{replyData.comment}</ReviewerText>
     )}
   </ReplyWrapper>
 );
@@ -60,12 +87,10 @@ const ReviewerName = styled.Text`
   font-size: 16px;
   font-weight: 500;
 `;
-const ReviewerTextGeneral = css`
+
+const ReviewerText = styled.Text`
   font-size: 16px;
   margin-top: 10px;
-`;
-const ReviewerText = styled.Text`
-  ${ReviewerTextGeneral}
 `;
 const ReviewerTextEditableWrapper = styled.View``;
 

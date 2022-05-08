@@ -8,9 +8,17 @@ export type RootStackParamList = {
   RestaurantFeed: undefined;
   UserScreen: { userId: string };
   AddRestaurantScreen: { role: UserRole };
-  ReplyScreen: undefined;
+  ReplyScreen: {
+    score: number;
+    comment: string;
+    restaurantId: string;
+    reviewId: string;
+    userName: string;
+    restaurantName: string;
+  };
   RestaurantScreen: { userData: User; restaurantId: string };
   UserFeed: undefined;
+  ResponsesFeed: undefined;
 };
 
 export type AdminTabScreenParamList = {

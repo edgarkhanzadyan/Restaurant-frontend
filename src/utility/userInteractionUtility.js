@@ -1,11 +1,6 @@
 import { ActionSheetIOS, Alert } from 'react-native';
 import { USER_ROLE } from '../constants';
-import {
-  deleteReview,
-  deleteReviewReply,
-  deleteUserFirebase,
-} from './firebaseUtility';
-import { deleteUserBackend } from './backendUtility';
+import { deleteReview, deleteReviewReply } from './firebaseUtility';
 
 const reviewActionSheet = ({
   restaurantId,

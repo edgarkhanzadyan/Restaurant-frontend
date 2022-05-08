@@ -8,7 +8,12 @@ import RestaurantImage from './RestaurantImage';
 
 const windowWidth = Dimensions.get('window').width;
 
-const UploadImageComponent = ({ setImgB64, imgB64 }) => {
+type Props = {
+  imgB64: string;
+  setImgB64: (imgB64: string) => unknown;
+};
+
+const UploadImageComponent = ({ setImgB64, imgB64 }: Props) => {
   const [imgLoading, setImgLoading] = useState(false);
   const pickImage = async () => {
     setImgLoading(true);
@@ -21,7 +26,7 @@ const UploadImageComponent = ({ setImgB64, imgB64 }) => {
         base64: true,
       });
 
-      if (!result.cancelled) {
+      if (!result.cancelled && result.base64) {
         setImgB64(result.base64);
       }
       setImgLoading(false);

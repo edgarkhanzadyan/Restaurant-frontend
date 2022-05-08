@@ -3,9 +3,17 @@ import { Alert, Button } from 'react-native';
 import Modal from 'react-native-modal';
 import styled from 'styled-components/native';
 
-import { updateUserPasswordBackend } from '../utility/backendUtility';
+type Props = {
+  modalIsOpen: boolean;
+  setModalIsOpen: (modalIsOpen: boolean) => unknown;
+  userId: string;
+};
 
-const UpdatePasswordModal = ({ modalIsOpen, setModalIsOpen, userId }) => {
+const UpdatePasswordModal = ({
+  modalIsOpen,
+  setModalIsOpen,
+  userId,
+}: Props) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,10 +45,12 @@ const UpdatePasswordModal = ({ modalIsOpen, setModalIsOpen, userId }) => {
           onPress={() => {
             if (password === confirmPassword) {
               setIsLoading(true);
-              updateUserPasswordBackend({
-                userId,
-                password,
-              })
+              console.log(userId);
+              // updateUserPasswordBackend({
+              //   userId,
+              //   password,
+              // })
+              Promise.resolve({ success: true })
                 .then((res) => {
                   if (res.success) {
                     setModalIsOpen(false);

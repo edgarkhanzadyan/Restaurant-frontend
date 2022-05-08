@@ -1,7 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 
 import { FieldsAreEmpty } from './helpers';
-import * as RootNavigation from '../../navigation/RootNavigation';
 
 const dummyUserData = [];
 
@@ -19,10 +18,10 @@ const signUserOutWithListeners = ({ setUserLoggedIn, setUserData }) => {
   SecureStore.deleteItemAsync('user');
   setUserLoggedIn(false);
   setUserData(null);
-  RootNavigation.reset({
-    index: 0,
-    routes: [{ name: 'LoginScreen' }],
-  });
+  // RootNavigation.reset({
+  //   index: 0,
+  //   routes: [{ name: 'LoginScreen' }],
+  // });
 };
 
 export const userStateListener = ({ setUserLoggedIn, setUserData }) => {

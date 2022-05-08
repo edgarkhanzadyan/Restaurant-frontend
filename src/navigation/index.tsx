@@ -7,7 +7,6 @@ import { userStateListener } from '../utility/firebaseUtility';
 
 import AdminTabNavigator from './AdminTabNavigator';
 import RestaurantOwnerTabNavigator from './RestaurantOwnerTabNavigator';
-import { navigationRef, isReadyRef } from './RootNavigation';
 
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
@@ -24,13 +23,7 @@ import { RootStackParamList } from './types';
 
 export default function Navigation() {
   return (
-    <NavigationContainer
-      ref={navigationRef}
-      onReady={() => {
-        // @ts-ignore
-        isReadyRef.current = true;
-      }}
-    >
+    <NavigationContainer>
       <RootNavigator />
     </NavigationContainer>
   );

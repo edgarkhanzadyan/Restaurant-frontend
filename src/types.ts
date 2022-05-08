@@ -36,4 +36,12 @@ export type Review = {
   comment: string;
   score: number;
   createdAt: string;
+  reply?: ReviewReply;
+};
+
+export type ReviewReply = {
+  _id: string;
+  replier: string;
+  comment: string;
+  createdAt: string;
 };

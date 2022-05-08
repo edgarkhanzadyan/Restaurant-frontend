@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/native';
+import { StackScreenProps } from '@react-navigation/stack';
 
-import { submitReply } from '../utility/firebaseUtility';
-import StarComponents from '../components/StarComponents';
-import SubmitButton from '../components/SubmitButton';
+import { submitReply } from '../../utility/firebaseUtility';
+import StarComponents from '../../components/StarComponents';
+import SubmitButton from '../../components/SubmitButton';
+import { RootStackParamList } from '../../navigation/types';
 
 const ReplyScreen = ({
   navigation,
@@ -17,7 +19,7 @@ const ReplyScreen = ({
       restaurantName,
     },
   },
-}) => {
+}: StackScreenProps<RootStackParamList, 'ReplyScreen'>) => {
   const [replyComment, setReplyComment] = useState('');
   return (
     <ResponseWrapper contentContainerStyle={{ alignItems: 'center' }}>
@@ -33,6 +35,7 @@ const ReplyScreen = ({
         onChangeText={setReplyComment}
       />
       <SubmitButton
+        isInverse={false}
         style={{ marginTop: 20 }}
         title="Submit"
         onPress={() =>

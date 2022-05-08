@@ -7,14 +7,17 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { submitReview } from '../utility/firebaseUtility';
 import StarComponents from '../components/StarComponents';
 
-const ReviewModal = ({ modalIsOpen, setModalIsOpen, restaurantId }) => {
+type Props = {
+  modalIsOpen: boolean;
+  setModalIsOpen: (modalIsOpen: boolean) => unknown;
+  restaurantId: string;
+};
+
+const ReviewModal = ({ modalIsOpen, setModalIsOpen, restaurantId }: Props) => {
   const [reviewDate, setReviewDate] = useState(new Date());
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState('');
-  const onDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || reviewDate;
-    setReviewDate(currentDate);
-  };
+
   return (
     <Modal
       isVisible={modalIsOpen}
@@ -25,6 +28,7 @@ const ReviewModal = ({ modalIsOpen, setModalIsOpen, restaurantId }) => {
       <ModalWrapper>
         <StarsTitle>Rate your experience:</StarsTitle>
         <StarComponents
+          disabled={false}
           reviewRating={reviewRating}
           setReviewRating={setReviewRating}
           size={40}
@@ -38,7 +42,10 @@ const ReviewModal = ({ modalIsOpen, setModalIsOpen, restaurantId }) => {
           value={reviewDate}
           mode="date"
           display="spinner"
-          onChange={onDateChange}
+          onChange={(_: Event, selectedDate: Date | undefined) => {
+            const currentDate = selectedDate || reviewDate;
+            setReviewDate(currentDate);
+          }}
           maximumDate={new Date()}
         />
 

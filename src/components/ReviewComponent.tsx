@@ -1,35 +1,67 @@
 import React from 'react';
-import { Button } from 'react-native';
-import styled, { css } from 'styled-components';
+import { Button, View } from 'react-native';
+import styled from 'styled-components/native';
 import StarComponents from './StarComponents';
 
 import { editReview, submitReply } from '../utility/firebaseUtility';
+import { Review, User } from '../types';
+import ReplyComponent from './ReplyComponent';
+import { reviewActionSheetWrapper } from '../utility/userInteractionUtility';
+
+type Props = {
+  reviewData: Review;
+  userData: User;
+  restaurantId: string;
+  setCommentToEdit: (commentToEdit: string | null) => unknown;
+  setCommentToEditText: (commentToEditText: string) => unknown;
+  commentToEdit: string | null;
+  commentToEditText: string;
+  commentToReply: string | null;
+  setCommentToReply: (commentToReply: string | null) => unknown;
+};
 
 const ReviewComponent = ({
-  openActionSheet,
-  id,
-  userName,
-  score,
-  dateTimestamp,
+  reviewData,
+  userData,
   restaurantId,
-  comment,
   setCommentToEdit,
   setCommentToEditText,
   commentToEdit,
   commentToEditText,
   commentToReply,
   setCommentToReply,
-  ReviewReply,
-}) => (
-  <ReviewContainer onPress={openActionSheet} key={id}>
+}: Props) => (
+  <ReviewContainer
+    onPress={() =>
+      reviewActionSheetWrapper({
+        restaurantId,
+        reviewId: reviewData._id,
+        isCommentReplied: !!reviewData.reply,
+        creatorId: reviewData.reviewer,
+        userData,
+        edit: () => {
+          setCommentToReply(null);
+          setCommentToEdit(reviewData._id);
+          setCommentToEditText(reviewData.comment);
+        },
+        reply: () => {
+          setCommentToEdit(null);
+          setCommentToReply(reviewData._id);
+          setCommentToEditText('');
+        },
+      })
+    }
+    key={reviewData._id}
+  >
     <ReviewHeader>
-      <ReviewerName>{userName}</ReviewerName>
-      <StarComponents reviewRating={score} size={20} disabled />
+      <ReviewerName>{reviewData.reviewer}</ReviewerName>
+      <StarComponents reviewRating={reviewData.score} size={20} disabled />
     </ReviewHeader>
     <ReviewerDate>
-      Date of visit: {new Date(dateTimestamp).toLocaleDateString('en-GB')}
+      Date of visit:{' '}
+      {new Date(reviewData.createdAt).toLocaleDateString('en-GB')}
     </ReviewerDate>
-    {commentToEdit === id ? (
+    {commentToEdit === reviewData._id ? (
       <ReviewerTextEditableWrapper>
         <ReviewerTextEditable
           value={commentToEditText}
@@ -48,7 +80,7 @@ const ReviewComponent = ({
             title="submit"
             onPress={() => {
               editReview({
-                reviewId: id,
+                reviewId: reviewData._id,
                 restaurantId,
                 comment: commentToEditText.trim(),
               }).then(() => {
@@ -60,10 +92,24 @@ const ReviewComponent = ({
         </ReviewerTextEditableFooter>
       </ReviewerTextEditableWrapper>
     ) : (
-      <ReviewerText>{comment}</ReviewerText>
+      <ReviewerText>{reviewData.comment}</ReviewerText>
     )}
-    {ReviewReply}
-    {commentToReply === id && (
+    {!reviewData.reply ? (
+      <View />
+    ) : (
+      <ReplyComponent
+        userData={userData}
+        replyData={reviewData.reply}
+        setCommentToEdit={setCommentToEdit}
+        commentToEdit={commentToEdit}
+        commentToEditText={commentToEditText}
+        setCommentToEditText={setCommentToEditText}
+        setCommentToReply={setCommentToReply}
+        restaurantId={restaurantId}
+        reviewId={reviewData._id}
+      />
+    )}
+    {commentToReply === reviewData._id && (
       <ReviewerTextEditableWrapper>
         <ReviewerTextEditable
           value={commentToEditText}
@@ -83,7 +129,7 @@ const ReviewComponent = ({
             onPress={() => {
               submitReply({
                 restaurantId,
-                reviewId: id,
+                reviewId: reviewData._id,
                 replyComment: commentToEditText.trim(),
               }).then(() => {
                 setCommentToReply(null);
@@ -118,12 +164,9 @@ const ReviewerDate = styled.Text`
   font-weight: 500;
   margin-top: 5px;
 `;
-const ReviewerTextGeneral = css`
+const ReviewerText = styled.Text`
   font-size: 16px;
   margin-top: 10px;
-`;
-const ReviewerText = styled.Text`
-  ${ReviewerTextGeneral}
 `;
 const ReviewerTextEditableWrapper = styled.View``;
 

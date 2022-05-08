@@ -6,15 +6,10 @@ import { HeaderBackButton } from '@react-navigation/elements';
 
 import ReviewModal from '../../modals/ReviewModal';
 import UploadImageComponent from '../../components/UploadImageComponent';
-import ReplyComponent from '../../components/ReplyComponent';
 import ReviewComponent from '../../components/ReviewComponent';
 import RestaurantImage from '../../components/RestaurantImage';
 import { USER_ROLE } from '../../constants';
-import {
-  reviewActionSheetWrapper,
-  replyActionSheetWrapper,
-  editInfoActionSheet,
-} from '../../utility/userInteractionUtility';
+import { editInfoActionSheet } from '../../utility/userInteractionUtility';
 import type { RootStackParamList } from '../../navigation/types';
 import { getRestaurantById, updateRestaurant } from '../../utility/requests';
 import { FullRestaurant } from '../../types';
@@ -30,9 +25,9 @@ const RestaurantScreen = ({
   );
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [commentToEdit, setCommentToEdit] = useState(null);
-  const [commentToEditText, setCommentToEditText] = useState('');
-  const [commentToReply, setCommentToReply] = useState(null);
+  const [commentToEdit, setCommentToEdit] = useState<string | null>(null);
+  const [commentToEditText, setCommentToEditText] = useState<string>('');
+  const [commentToReply, setCommentToReply] = useState<string | null>(null);
 
   const [restaurantName, setRestaurantName] = useState('');
   const [restaurantDescription, setRestaurantDescription] = useState('');
@@ -120,68 +115,15 @@ const RestaurantScreen = ({
     restaurantInfo.reviews &&
     restaurantInfo.reviews.map((rev) => (
       <ReviewComponent
-        id={rev._id}
-        key={rev._id}
-        userName={rev.reviewer}
-        score={rev.score}
-        dateTimestamp={rev.createdAt}
+        reviewData={rev}
+        userData={userData}
         restaurantId={restaurantId}
-        comment={rev.comment}
         commentToEdit={commentToEdit}
         setCommentToEdit={setCommentToEdit}
         commentToEditText={commentToEditText}
         setCommentToEditText={setCommentToEditText}
         commentToReply={commentToReply}
         setCommentToReply={setCommentToReply}
-        openActionSheet={() =>
-          reviewActionSheetWrapper({
-            restaurantId,
-            reviewId: rev._id,
-            isCommentReplied: !!rev.reply,
-            creatorId: rev.reviewer,
-            userData,
-            edit: () => {
-              setCommentToReply(null);
-              // setCommentToEdit(rev._id);
-              setCommentToEditText(rev.comment);
-            },
-            reply: () => {
-              setCommentToEdit(null);
-              // setCommentToReply(rev._id);
-              setCommentToEditText('');
-            },
-          })
-        }
-        ReviewReply={
-          !rev.reply ? (
-            <View />
-          ) : (
-            <ReplyComponent
-              openReplyActionSheet={() =>
-                replyActionSheetWrapper({
-                  restaurantId,
-                  reviewId: rev._id,
-                  replierId: rev.reply.replierId,
-                  userData,
-                  edit: () => {
-                    setCommentToReply(null);
-                    setCommentToEdit(rev.reply.id);
-                    setCommentToEditText(rev.reply.comment);
-                  },
-                })
-              }
-              userName={rev.reply.userName}
-              id={rev.reply.id}
-              comment={rev.reply.comment}
-              commentToEdit={commentToEdit}
-              setCommentToEdit={setCommentToEdit}
-              commentToEditText={commentToEditText}
-              setCommentToEditText={setCommentToEditText}
-              reviewId={rev._id}
-              restaurantId={restaurantId}
-            />
-          )
-        }
       />
     ));
   return (

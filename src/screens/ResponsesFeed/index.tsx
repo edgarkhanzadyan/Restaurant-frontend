@@ -1,59 +1,66 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, ActivityIndicator } from 'react-native';
 import styled from 'styled-components/native';
-import * as SecureStore from 'expo-secure-store';
+import { StackScreenProps } from '@react-navigation/stack';
 
-import { getPendingReviews } from '../utility/firebaseUtility';
-import StarComponents from '../components/StarComponents';
+import StarComponents from '../../components/StarComponents';
+import { RootStackParamList } from '../../navigation/types';
+import { User, Review } from '../../types';
+import { getUser } from '../../utility/secureStore';
 
-const PendingReviewsFeed = ({ navigation }) => {
-  const [userData, setUserData] = useState(null);
+const PendingReviewsFeed = ({
+  navigation,
+}: StackScreenProps<RootStackParamList, 'ResponsesFeed'>) => {
+  const [userData, setUserData] = useState<User | null>(null);
   const [pendingReviews, setPendingReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    SecureStore.getItemAsync('user')
-      .then((user) => setUserData(JSON.parse(user)))
-      .catch((err) => console.warn(err));
+    getUser().then((user) => setUserData(user));
   }, []);
   useEffect(() => {
     setIsLoading(true);
-    if (userData)
-      return getPendingReviews({
-        userUid: userData.userUid,
-        setIsLoading,
-        setPendingReviews,
-      });
-    return () => {};
-  }, [userData]);
-  const renderItem = ({ item }) => (
+    setPendingReviews([]);
+    setIsLoading(false);
+  });
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   if (userData)
+  //     return getPendingReviews({
+  //       userUid: userData.userUid,
+  //       setIsLoading,
+  //       setPendingReviews,
+  //     });
+  //   return () => {};
+  // }, [userData]);
+  const renderItem = ({ item }: { item: Review }) => (
     <ResponseWrapper
       onPress={() =>
         navigation.navigate('ReplyScreen', {
           score: item.score,
           comment: item.comment,
-          restaurantId: item.restaurantId,
-          restaurantName: item.restaurantName,
-          reviewId: item.reviewId,
-          userName: item.userName,
+          restaurantId: item.restaurant,
+          restaurantName: item.restaurant,
+          reviewId: item.reviewer,
+          userName: item.reviewer,
         })
       }
     >
       <ResponseHeader>
         <StarComponents reviewRating={item.score} disabled size={20} />
-        <ResponseUser>{item.userName}</ResponseUser>
+        <ResponseUser>{item.reviewer}</ResponseUser>
       </ResponseHeader>
-      <ResponseRestaurant>{item.restaurantName}</ResponseRestaurant>
+      <ResponseRestaurant>{item.restaurant}</ResponseRestaurant>
       <ResponseBody>{item.comment}</ResponseBody>
     </ResponseWrapper>
   );
   return (
     <PendingReviewsContainer>
       {userData && !isLoading ? (
-        <FlatList
+        <FlatList<Review>
           data={pendingReviews}
           renderItem={renderItem}
-          keyExtractor={(item) => item.reviewId}
+          keyExtractor={(item) => item._id}
         />
       ) : (
         <ActivityIndicator />
