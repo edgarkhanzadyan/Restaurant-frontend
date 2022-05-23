@@ -23,7 +23,6 @@ const UserScreen = ({
     params: { userId },
   },
 }: StackScreenProps<RootStackParamList, 'UserScreen'>) => {
-  console.log(userId);
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [userInfoEdit, setUserInfoEdit] = useState<User | null>(null);
   const [thisUserInfo, setThisUserInfo] = useState<User | null>(null);
@@ -43,19 +42,19 @@ const UserScreen = ({
     setRestaurantData(response);
   };
 
-  const fetchUser = async () => {
-    const response = await getUser({
-      userId,
-    });
-    setUserInfo(response);
-    setUserInfoEdit(response);
-  };
-
   useEffect(() => {
     setIsLoading(true);
-    Promise.all([getUserStore(), fetchRestaurants(), fetchUser()])
-      .then(([user]) => {
-        setThisUserInfo(user);
+    Promise.all([
+      getUserStore(),
+      fetchRestaurants(),
+      getUser({
+        userId,
+      }),
+    ])
+      .then(([thisUser, , userData]) => {
+        setUserInfo(userData.user);
+        setUserInfoEdit(userData.user);
+        setThisUserInfo(thisUser);
         setIsLoading(false);
       })
       .catch((e) => console.error(e));
@@ -100,8 +99,9 @@ const UserScreen = ({
                   onEdit: updateDone,
                   onCancel: resetUser,
                 });
+              } else {
+                resetUser();
               }
-              resetUser();
             }}
             title="Done"
           />
@@ -131,7 +131,7 @@ const UserScreen = ({
       }}
     />
   );
-  console.log('userInfo', userInfo);
+
   return (
     <UserScreenContainer>
       <SafeAreaContainer>
@@ -223,7 +223,6 @@ const UserScreen = ({
       <UpdatePasswordModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
-        userId={userInfo._id}
       />
     </UserScreenContainer>
   );

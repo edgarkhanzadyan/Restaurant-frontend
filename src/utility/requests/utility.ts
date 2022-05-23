@@ -20,6 +20,7 @@ export const api = <RequestBody, T>(
     ...options,
     body: options.body && JSON.stringify(options.body),
   };
+
   return getUser()
     .then((user) => {
       const headers = new Headers();

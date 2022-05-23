@@ -36,9 +36,9 @@ const RestaurantCardComponent = ({
         </DeleteButton>
       )}
     </RestaurantHeader>
-    {restaurant.averageScore && (
+    {restaurant.score && (
       <RestaurantScore>
-        Average rating: {restaurant.averageScore.toFixed(2)}
+        Average rating: {restaurant.score.toFixed(2)}
       </RestaurantScore>
     )}
     <RestaurantDescription>
@@ -48,7 +48,7 @@ const RestaurantCardComponent = ({
     </RestaurantDescription>
     <RestaurantImage
       source={{
-        uri: `data:image/png;base64,${restaurant.image}`,
+        uri: restaurant.image,
       }}
     />
   </RestaurantWrapper>

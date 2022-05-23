@@ -4,17 +4,17 @@ export type RootStackParamList = {
   LoginScreen: undefined;
   AdminScreen: undefined;
   RestaurantOwnerScreen: undefined;
-  SignUpScreen: { isCreatorAdmin: boolean };
+  SignUpScreen: { isCreatorAdmin: boolean; onBack?: () => unknown };
   RestaurantFeed: undefined;
   UserScreen: { userId: string };
   AddRestaurantScreen: { role: UserRole };
   ReplyScreen: {
     score: number;
     comment: string;
-    restaurantId: string;
     reviewId: string;
     userName: string;
     restaurantName: string;
+    onBack: () => unknown;
   };
   RestaurantScreen: { userData: User; restaurantId: string };
   UserFeed: undefined;

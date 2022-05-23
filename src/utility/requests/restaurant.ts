@@ -1,5 +1,5 @@
 import { FullRestaurant, Restaurant } from '../../types';
-import { FieldsAreEmpty } from '../firebaseUtility/helpers';
+import { FieldsAreEmpty } from '../helpers';
 import { backendUrl } from './constants';
 import { api } from './utility';
 

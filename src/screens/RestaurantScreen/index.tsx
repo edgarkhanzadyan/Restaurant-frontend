@@ -96,7 +96,6 @@ const RestaurantScreen = ({
       headerRight,
       headerLeft,
     });
-    // navigation.setOptions({ back });
   });
 
   if (!restaurantInfo) return <ActivityIndicator />;
@@ -117,7 +116,6 @@ const RestaurantScreen = ({
       <ReviewComponent
         reviewData={rev}
         userData={userData}
-        restaurantId={restaurantId}
         commentToEdit={commentToEdit}
         setCommentToEdit={setCommentToEdit}
         commentToEditText={commentToEditText}
@@ -153,11 +151,11 @@ const RestaurantScreen = ({
                 value={restaurantLocation}
               />
             </RestaurantDetailWrapper>
-            {restaurantInfo.averageScore && (
+            {restaurantInfo.score && (
               <RestaurantDetailWrapper>
                 <RestaurantDetailTitle>Average Rating:</RestaurantDetailTitle>
                 <RestaurantDetail>
-                  {restaurantInfo.averageScore.toFixed(2)}
+                  {restaurantInfo.score.toFixed(2)}
                 </RestaurantDetail>
               </RestaurantDetailWrapper>
             )}
@@ -174,11 +172,11 @@ const RestaurantScreen = ({
               <RestaurantDetailTitle>Address:</RestaurantDetailTitle>
               <RestaurantDetail>{restaurantLocation}</RestaurantDetail>
             </RestaurantDetailWrapper>
-            {restaurantInfo.averageScore && (
+            {restaurantInfo.score && (
               <RestaurantDetailWrapper>
                 <RestaurantDetailTitle>Average Rating:</RestaurantDetailTitle>
                 <RestaurantDetail>
-                  {restaurantInfo.averageScore.toFixed(2)}
+                  {restaurantInfo.score.toFixed(2)}
                 </RestaurantDetail>
               </RestaurantDetailWrapper>
             )}

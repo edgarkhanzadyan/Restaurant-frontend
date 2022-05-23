@@ -6,3 +6,5 @@ export const setUser = (user: UserWithToken) =>
 
 export const getUser = (): Promise<UserWithToken | null> =>
   SecureStore.getItemAsync('user').then((res) => res && JSON.parse(res));
+
+export const signOut = () => SecureStore.deleteItemAsync('user');

@@ -3,7 +3,7 @@ import { Button } from 'react-native';
 import styled from 'styled-components/native';
 import { ReviewReply, User } from '../types';
 
-import { editReviewReply } from '../utility/firebaseUtility';
+import { updateReviewReply } from '../utility/requests';
 import { replyActionSheetWrapper } from '../utility/userInteractionUtility';
 
 type Props = {
@@ -14,7 +14,6 @@ type Props = {
   commentToEditText: string;
   setCommentToEditText: (commentToEditText: string) => unknown;
   setCommentToReply: (commentToReply: string | null) => unknown;
-  restaurantId: string;
   reviewId: string;
 };
 
@@ -26,13 +25,12 @@ const ReplyComponent = ({
   setCommentToEdit,
   commentToEditText,
   setCommentToEditText,
-  restaurantId,
   reviewId,
 }: Props) => (
   <ReplyWrapper
     onPress={() =>
       replyActionSheetWrapper({
-        restaurantId,
+        replyId: replyData._id,
         reviewId,
         replierId: replyData.replier,
         userData,
@@ -63,9 +61,8 @@ const ReplyComponent = ({
           <Button
             title="submit"
             onPress={() => {
-              editReviewReply({
+              updateReviewReply({
                 reviewId,
-                restaurantId,
                 comment: commentToEditText.trim(),
               }).then(() => {
                 setCommentToEdit(null);

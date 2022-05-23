@@ -25,7 +25,7 @@ import { setUser } from '../../utility/secureStore';
 const SignUpScreen = ({
   navigation,
   route: {
-    params: { isCreatorAdmin },
+    params: { isCreatorAdmin, onBack },
   },
 }: StackScreenProps<RootStackParamList, 'SignUpScreen'>) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +139,12 @@ const SignUpScreen = ({
         <SubmitButton
           disabled={isLoading}
           isInverse
-          onPress={() => navigation.pop()}
+          onPress={() => {
+            navigation.pop();
+            if (onBack) {
+              onBack();
+            }
+          }}
           title="Back"
         />
       </InputContainer>

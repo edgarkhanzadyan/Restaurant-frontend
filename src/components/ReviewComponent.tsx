@@ -3,15 +3,14 @@ import { Button, View } from 'react-native';
 import styled from 'styled-components/native';
 import StarComponents from './StarComponents';
 
-import { editReview, submitReply } from '../utility/firebaseUtility';
 import { Review, User } from '../types';
 import ReplyComponent from './ReplyComponent';
 import { reviewActionSheetWrapper } from '../utility/userInteractionUtility';
+import { createReviewReply, updateReview } from '../utility/requests';
 
 type Props = {
   reviewData: Review;
   userData: User;
-  restaurantId: string;
   setCommentToEdit: (commentToEdit: string | null) => unknown;
   setCommentToEditText: (commentToEditText: string) => unknown;
   commentToEdit: string | null;
@@ -23,7 +22,6 @@ type Props = {
 const ReviewComponent = ({
   reviewData,
   userData,
-  restaurantId,
   setCommentToEdit,
   setCommentToEditText,
   commentToEdit,
@@ -34,7 +32,6 @@ const ReviewComponent = ({
   <ReviewContainer
     onPress={() =>
       reviewActionSheetWrapper({
-        restaurantId,
         reviewId: reviewData._id,
         isCommentReplied: !!reviewData.reply,
         creatorId: reviewData.reviewer,
@@ -79,10 +76,10 @@ const ReviewComponent = ({
           <Button
             title="submit"
             onPress={() => {
-              editReview({
+              updateReview({
                 reviewId: reviewData._id,
-                restaurantId,
                 comment: commentToEditText.trim(),
+                score: reviewData.score,
               }).then(() => {
                 setCommentToEdit(null);
                 setCommentToEditText('');
@@ -105,7 +102,6 @@ const ReviewComponent = ({
         commentToEditText={commentToEditText}
         setCommentToEditText={setCommentToEditText}
         setCommentToReply={setCommentToReply}
-        restaurantId={restaurantId}
         reviewId={reviewData._id}
       />
     )}
@@ -127,10 +123,9 @@ const ReviewComponent = ({
           <Button
             title="submit"
             onPress={() => {
-              submitReply({
-                restaurantId,
+              createReviewReply({
                 reviewId: reviewData._id,
-                replyComment: commentToEditText.trim(),
+                comment: commentToEditText.trim(),
               }).then(() => {
                 setCommentToReply(null);
                 setCommentToEditText('');

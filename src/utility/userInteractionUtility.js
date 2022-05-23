@@ -1,14 +1,9 @@
 import { ActionSheetIOS, Alert } from 'react-native';
 import { USER_ROLE } from '../constants';
-import { deleteReview, deleteReviewReply } from './firebaseUtility';
 
-const reviewActionSheet = ({
-  restaurantId,
-  reviewId,
-  edit,
-  reply,
-  options,
-}) => {
+import { deleteReview, deleteReviewReply } from './requests';
+
+const reviewActionSheet = ({ reviewId, edit, reply, options }) => {
   ActionSheetIOS.showActionSheetWithOptions(options, (buttonIndex) => {
     if (buttonIndex === options.options.findIndex((opt) => opt === 'Edit')) {
       edit();
@@ -23,7 +18,7 @@ const reviewActionSheet = ({
         [
           {
             text: 'Delete review',
-            onPress: () => deleteReview({ restaurantId, reviewId }),
+            onPress: () => deleteReview({ reviewId }),
             style: 'destructive',
           },
           {
@@ -53,7 +48,6 @@ const optionsArr = [
   },
 ];
 export const reviewActionSheetWrapper = ({
-  restaurantId,
   reviewId,
   edit,
   reply,
@@ -63,7 +57,6 @@ export const reviewActionSheetWrapper = ({
 }) => {
   const aux = (opt) =>
     reviewActionSheet({
-      restaurantId,
       reviewId,
       edit,
       reply,
@@ -88,7 +81,7 @@ export const reviewActionSheetWrapper = ({
   }
 };
 
-const replyActionSheet = ({ restaurantId, reviewId, edit }) => {
+const replyActionSheet = ({ replyId, reviewId, edit }) => {
   ActionSheetIOS.showActionSheetWithOptions(
     {
       options: ['Cancel', 'Edit', 'Delete'],
@@ -106,7 +99,7 @@ const replyActionSheet = ({ restaurantId, reviewId, edit }) => {
           [
             {
               text: 'Delete review reply',
-              onPress: () => deleteReviewReply({ restaurantId, reviewId }),
+              onPress: () => deleteReviewReply({ reviewId, replyId }),
               style: 'destructive',
             },
             {
@@ -122,8 +115,8 @@ const replyActionSheet = ({ restaurantId, reviewId, edit }) => {
 };
 
 export const replyActionSheetWrapper = ({
-  restaurantId,
   reviewId,
+  replyId,
   edit,
   userData,
   replierId,
@@ -134,7 +127,7 @@ export const replyActionSheetWrapper = ({
       replierId === userData.userUid)
   )
     replyActionSheet({
-      restaurantId,
+      replyId,
       reviewId,
       edit,
     });

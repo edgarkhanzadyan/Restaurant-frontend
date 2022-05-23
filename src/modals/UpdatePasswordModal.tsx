@@ -6,14 +6,9 @@ import styled from 'styled-components/native';
 type Props = {
   modalIsOpen: boolean;
   setModalIsOpen: (modalIsOpen: boolean) => unknown;
-  userId: string;
 };
 
-const UpdatePasswordModal = ({
-  modalIsOpen,
-  setModalIsOpen,
-  userId,
-}: Props) => {
+const UpdatePasswordModal = ({ modalIsOpen, setModalIsOpen }: Props) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -45,11 +40,6 @@ const UpdatePasswordModal = ({
           onPress={() => {
             if (password === confirmPassword) {
               setIsLoading(true);
-              console.log(userId);
-              // updateUserPasswordBackend({
-              //   userId,
-              //   password,
-              // })
               Promise.resolve({ success: true })
                 .then((res) => {
                   if (res.success) {

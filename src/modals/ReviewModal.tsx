@@ -4,8 +4,8 @@ import Modal from 'react-native-modal';
 import styled from 'styled-components/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import { submitReview } from '../utility/firebaseUtility';
 import StarComponents from '../components/StarComponents';
+import { createReview } from '../utility/requests';
 
 type Props = {
   modalIsOpen: boolean;
@@ -52,11 +52,10 @@ const ReviewModal = ({ modalIsOpen, setModalIsOpen, restaurantId }: Props) => {
         <Button
           title="Submit review"
           onPress={() => {
-            submitReview({
-              restaurantId,
-              reviewRating,
-              reviewComment: reviewComment.trim(),
-              reviewDate,
+            createReview({
+              restaurant: restaurantId,
+              comment: reviewComment.trim(),
+              score: reviewRating,
             }).then(() => {
               setModalIsOpen(false);
               setReviewRating(0);

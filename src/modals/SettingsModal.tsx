@@ -5,7 +5,7 @@ import Modal from 'react-native-modal';
 import styled from 'styled-components/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import { signOut } from '../utility/firebaseUtility';
+import { signOut } from '../utility/secureStore';
 import { RootStackParamList } from '../navigation/types';
 
 const SettingsModal = ({

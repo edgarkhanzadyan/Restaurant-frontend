@@ -1,4 +1,4 @@
-// const herokuUrl = `https://verjapes.herokuapp.com`;
-const localhostUrl = `http://localhost:3456`;
+const herokuUrl = `https://restaurant-app-capstone.herokuapp.com`;
+// const localhostUrl = `http://localhost:3456`;
 
-export const backendUrl = localhostUrl;
+export const backendUrl = herokuUrl;

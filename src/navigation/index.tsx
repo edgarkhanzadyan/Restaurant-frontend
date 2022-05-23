@@ -3,8 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useState, useEffect } from 'react';
 import { AppState } from 'react-native';
 
-import { userStateListener } from '../utility/firebaseUtility';
-
 import AdminTabNavigator from './AdminTabNavigator';
 import RestaurantOwnerTabNavigator from './RestaurantOwnerTabNavigator';
 
@@ -20,6 +18,8 @@ import ReplyScreen from '../screens/ReplyScreen';
 import { USER_ROLE } from '../constants';
 
 import { RootStackParamList } from './types';
+import { getUser } from '../utility/secureStore';
+import { UserWithToken } from '../types';
 
 export default function Navigation() {
   return (
@@ -29,49 +29,25 @@ export default function Navigation() {
   );
 }
 
-type UserData =
-  | {
-      role: string;
-    }
-  | undefined;
-
 const Stack = createStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
-  const [userLoggedIn, setUserLoggedIn] = useState(null);
-  const [userData, setUserData] = useState<UserData>(undefined);
+  const [userData, setUserData] = useState<UserWithToken | null>(null);
   const [appState, setAppState] = useState('active');
   useEffect(() => {
-    userStateListener({ setUserLoggedIn, setUserData });
-  }, [userLoggedIn, appState]);
-  // useEffect(
-  //   () =>
-  //     userLoggedIn
-  //       ? userStateListenerDatabase({ setUserLoggedIn, setUserData })
-  //       : () => {},
-  //   [userLoggedIn, appState]
-  // );
-  // useEffect(
-  //   () => () => {
-  //     // @ts-ignore
-  //     isReadyRef.current = false;
-  //   },
-  //   []
-  // );
+    getUser().then((user) => {
+      setUserData(user);
+    });
+  }, [appState]);
   useEffect(() => {
     AppState.addEventListener('change', (nextAppState) =>
       setAppState(nextAppState)
     );
   });
-  // useEffect(() => {
-  //   SecureStore.getItemAsync('user')
-  //     .then((user) => user && setUserData(JSON.parse(user)))
-  //     .catch((err) => console.warn(err));
-  // }, []);
-  if (userLoggedIn === null || userData === undefined) return <SplashScreen />;
+  if (!userData) return <SplashScreen />;
 
   const initialRoute = (): keyof RootStackParamList => {
-    if (userLoggedIn && userData) {
+    if (userData) {
       switch (userData.role) {
         case USER_ROLE.ADMIN:
           return 'AdminScreen';

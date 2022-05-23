@@ -1,4 +1,4 @@
-import { FieldsAreEmpty } from '../firebaseUtility/helpers';
+import { FieldsAreEmpty } from '../helpers';
 import { backendUrl } from './constants';
 import { UserRole, User, UserWithToken } from '../../types';
 import { api } from './utility';
@@ -129,7 +129,7 @@ export const updateUser = ({
 type GetUserQueryParameters = {
   userId: string;
 };
-type GetUserResponseBody = User;
+type GetUserResponseBody = { user: User };
 export const getUser = ({
   userId,
 }: GetUserQueryParameters): Promise<GetUserResponseBody> => {

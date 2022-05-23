@@ -4,7 +4,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator, Dimensions } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 
-// import { createRestaurant } from '../../utility/firebaseUtility';
 import { resetToMainScreen } from '../../utility/userInteractionUtility';
 import SubmitButton from '../../components/SubmitButton';
 import RestaurantImage from '../../components/RestaurantImage';

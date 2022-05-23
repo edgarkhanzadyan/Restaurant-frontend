@@ -2,22 +2,15 @@ import React, { useState } from 'react';
 import styled from 'styled-components/native';
 import { StackScreenProps } from '@react-navigation/stack';
 
-import { submitReply } from '../../utility/firebaseUtility';
 import StarComponents from '../../components/StarComponents';
 import SubmitButton from '../../components/SubmitButton';
 import { RootStackParamList } from '../../navigation/types';
+import { createReviewReply } from '../../utility/requests';
 
 const ReplyScreen = ({
   navigation,
   route: {
-    params: {
-      score,
-      comment,
-      restaurantId,
-      reviewId,
-      userName,
-      restaurantName,
-    },
+    params: { score, comment, reviewId, userName, restaurantName, onBack },
   },
 }: StackScreenProps<RootStackParamList, 'ReplyScreen'>) => {
   const [replyComment, setReplyComment] = useState('');
@@ -38,19 +31,15 @@ const ReplyScreen = ({
         isInverse={false}
         style={{ marginTop: 20 }}
         title="Submit"
-        onPress={() =>
-          submitReply({
-            restaurantId,
+        onPress={() => {
+          createReviewReply({
             reviewId,
-            replyComment: replyComment.trim(),
-          })
-            .then(() => {
-              navigation.pop();
-            })
-            .catch((error) => {
-              console.warn(error);
-            })
-        }
+            comment: replyComment.trim(),
+          }).then(() => {
+            navigation.pop();
+            onBack();
+          });
+        }}
       />
     </ResponseWrapper>
   );

@@ -5,7 +5,6 @@ import { FontAwesome } from '@expo/vector-icons';
 import { StackScreenProps } from '@react-navigation/stack';
 
 import type { User } from '../../types';
-// import { getUsers } from '../../utility/firebaseUtility';
 import UserCardComponent from '../../components/UserCardComponent';
 import { deleteUser, getAllUsers } from '../../utility/requests';
 import { getUser } from '../../utility/secureStore';
@@ -43,16 +42,15 @@ const UserFeed = ({ navigation }: UserFeedProps) => {
   useEffect(() => {
     setIsLoading(true);
     if (userData) refresh();
-    // return getAllUsers({
-    //   setUsers,
-    //   setIsLoading,
-    //   selfUserUid: userData.userUid,
-    // });
   }, [userData]);
   const renderItem = ({ item }: { item: User }) => (
     <UserCardComponent
       item={item}
-      navigate={() => navigation.navigate('UserScreen', { userId: item._id })}
+      navigate={() =>
+        navigation.navigate('UserScreen', {
+          userId: item._id,
+        })
+      }
       onDelete={() =>
         deleteUser({ userId: item._id })
           .then(() => {
@@ -71,6 +69,9 @@ const UserFeed = ({ navigation }: UserFeedProps) => {
               navigate={() =>
                 navigation.navigate('SignUpScreen', {
                   isCreatorAdmin: true,
+                  onBack: () => {
+                    refresh();
+                  },
                 })
               }
             />

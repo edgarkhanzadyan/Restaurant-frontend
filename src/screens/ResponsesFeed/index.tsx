@@ -7,42 +7,39 @@ import StarComponents from '../../components/StarComponents';
 import { RootStackParamList } from '../../navigation/types';
 import { User, Review } from '../../types';
 import { getUser } from '../../utility/secureStore';
+import { getUnrepliedReviews } from '../../utility/requests';
 
 const PendingReviewsFeed = ({
   navigation,
 }: StackScreenProps<RootStackParamList, 'ResponsesFeed'>) => {
   const [userData, setUserData] = useState<User | null>(null);
-  const [pendingReviews, setPendingReviews] = useState([]);
+  const [pendingReviews, setPendingReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const fetchUnreplied = async () => {
+    setIsLoading(true);
+    const response = await getUnrepliedReviews();
+    setPendingReviews(response.reviews);
+    setIsLoading(false);
+    return response;
+  };
 
   useEffect(() => {
     getUser().then((user) => setUserData(user));
   }, []);
   useEffect(() => {
-    setIsLoading(true);
-    setPendingReviews([]);
-    setIsLoading(false);
-  });
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   if (userData)
-  //     return getPendingReviews({
-  //       userUid: userData.userUid,
-  //       setIsLoading,
-  //       setPendingReviews,
-  //     });
-  //   return () => {};
-  // }, [userData]);
+    fetchUnreplied();
+  }, []);
   const renderItem = ({ item }: { item: Review }) => (
     <ResponseWrapper
       onPress={() =>
         navigation.navigate('ReplyScreen', {
           score: item.score,
           comment: item.comment,
-          restaurantId: item.restaurant,
-          restaurantName: item.restaurant,
+          restaurantName: item.restaurantId,
           reviewId: item.reviewer,
           userName: item.reviewer,
+          onBack: fetchUnreplied,
         })
       }
     >
@@ -50,7 +47,7 @@ const PendingReviewsFeed = ({
         <StarComponents reviewRating={item.score} disabled size={20} />
         <ResponseUser>{item.reviewer}</ResponseUser>
       </ResponseHeader>
-      <ResponseRestaurant>{item.restaurant}</ResponseRestaurant>
+      <ResponseRestaurant>{item.restaurantId}</ResponseRestaurant>
       <ResponseBody>{item.comment}</ResponseBody>
     </ResponseWrapper>
   );

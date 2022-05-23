@@ -71,7 +71,6 @@ const RestaurantFeed = ({ navigation }: RestaurantFeedProps) => {
             })
             .catch((e) => console.log(e));
           break;
-        // return getRestaurantData({ setRestaurantData, setIsLoading });
         default:
           console.warn('Role does not exist');
       }

@@ -18,8 +18,7 @@ export type Restaurant = {
   name: string;
   owner: string;
   reviews: Review[];
-  averageScore: number;
-  // base64
+  score: number;
   image: string;
 };
 
@@ -31,12 +30,12 @@ export type FullRestaurant = Restaurant & {
 
 export type Review = {
   _id: string;
-  reviewer: string;
-  restaurant: string;
   comment: string;
+  restaurantId: string;
+  reviewer: string;
   score: number;
+  reply: ReviewReply;
   createdAt: string;
-  reply?: ReviewReply;
 };
 
 export type ReviewReply = {

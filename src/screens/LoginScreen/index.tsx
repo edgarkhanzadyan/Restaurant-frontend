@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import type { StackScreenProps } from '@react-navigation/stack';
+import { Alert } from 'react-native';
 import type { RootStackParamList } from '../../navigation/types';
-import {
-  handleAlerts,
-  resetToMainScreen,
-} from '../../utility/userInteractionUtility';
+import { resetToMainScreen } from '../../utility/userInteractionUtility';
 import SubmitButton from '../../components/SubmitButton';
 import { login } from '../../utility/requests';
 import {
@@ -38,7 +36,7 @@ const LoginPage = ({
       setIsLoading(false);
     } catch (e) {
       setIsLoading(false);
-      handleAlerts(e);
+      Alert.alert('Wrong email/password');
     }
   };
 

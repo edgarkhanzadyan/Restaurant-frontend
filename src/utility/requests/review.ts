@@ -1,4 +1,5 @@
-import { FieldsAreEmpty } from '../firebaseUtility/helpers';
+import { Review } from '../../types';
+import { FieldsAreEmpty } from '../helpers';
 import { backendUrl } from './constants';
 import { api } from './utility';
 
@@ -148,3 +149,13 @@ export const deleteReviewReply = ({
     }
   );
 };
+
+type GetUnrepliedReviewsRequestBody = {};
+type GetUnrepliedReviewsResponseBody = { reviews: Review[]; message: string };
+export const getUnrepliedReviews = () =>
+  api<GetUnrepliedReviewsRequestBody, GetUnrepliedReviewsResponseBody>(
+    `${backendUrl}/review/unreplied`,
+    {
+      method: 'GET',
+    }
+  );

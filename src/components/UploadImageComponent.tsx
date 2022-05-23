@@ -4,7 +4,6 @@ import styled from 'styled-components/native';
 import * as ImagePicker from 'expo-image-picker';
 
 import RestaurantImage from './RestaurantImage';
-// import { uploadImage } from '../utility/firebaseUtility';
 
 const windowWidth = Dimensions.get('window').width;
 
